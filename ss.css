@@ -1,0 +1,61 @@
+body {
+  background-color: grey;
+}
+
+button {
+  background-color: black;
+  border-color: white;
+  color: red;
+  font-size: 14px;
+  width: 150px;
+  height: 30px;
+}
+
+input {
+  width: 18%;
+  background-color: black;
+  border: 0.5px solid white;
+  color: blue;
+  font-size: 12px;
+  width: 200px;
+  height: 30px;
+}
+
+label {
+  width: 18%;
+  background-color: black;
+  border-color: white;
+  color: blue;
+  font-size: 12px;
+  width: 200px;
+  height: 30px;
+}
+
+h1 {
+  font-size: 24px;
+  background-color: black;
+  font-family: verdana;
+  color: blue;
+  height: 34px;
+  border: 2px solid white;
+  text-align: center;
+  width: 300px;
+}
+
+th {
+  font-size: 16px;
+  font-family: verdana;
+  text-align: center;
+  background-color: black;
+  color: blue;
+  border: 0.5px solid white;
+}
+
+table, td {
+  font-size: 12px;
+  font-family: verdana;
+  text-align: left;
+  background-color: black;
+  color: white;
+  border: 0.5px solid white;
+}

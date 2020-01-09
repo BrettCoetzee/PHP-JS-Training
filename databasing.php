@@ -2,6 +2,7 @@
   include 'mysql.php';
   $commandStr = $_POST['command'];
   $obj = json_decode($_POST['object'], false);
+  $miscStr = $_POST['misc'];
   $returnVal;
   
   switch ($commandStr) {
@@ -15,9 +16,9 @@
     
     case "load": $returnVal = MySqlClass::loadPerson($obj->name, $obj->surname); break;
     
-    case "save": $returnVal = MySqlClass::savePerson($obj->name, $obj->surname, $obj->dateOfBirth, $obj->emailAddress, $obj->age); break;
+    case "save": $returnVal = MySqlClass::savePerson($miscStr, $obj->name, $obj->surname, $obj->dateOfBirth, $obj->emailAddress, $obj->age); break;
     
-    case "delete": $returnVal = MySqlClass::deletePerson($obj->name, $obj->surname); break;
+    case "delete": $returnVal = MySqlClass::deletePerson($obj->name, $obj->surname, $obj->dateOfBirth, $obj->emailAddress, $obj->age); break;
     
     case "loadAll": $returnVal = MySqlClass::loadAll(); break;
     

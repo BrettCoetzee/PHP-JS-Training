@@ -1,17 +1,37 @@
 <html>
+<head><link rel="stylesheet" type="text/css" href="ss.css"></head>
 <script type="text/javascript" src="jquery-1.12.3.min.js"></script>
 <script type="text/javascript" src="mainscript.js"></script>
-<body onload='main()'>
+
+<body>
+<h1 id="heading">People Database</h1>
   <button id="create10people" onclick='create10people()'>Create 10 People</button>
-  <button id="save" onclick='save()'>Save Brett1 Age to 11</button>
-  <button id="load" onclick='load()'>Load Brett1</button>
-  <button id="loadAll" onclick='loadAll()'>Load All</button>
-  <button id="deleteAll" onclick='deleteAll()'>DeleteAll</button>
-  <button id="deleteP" onclick='deleteP()'>Delete Brett2</button>
-  <button id="clearOutput" onclick='clearOutput()'>Clear Output</button>
+  <button id="deleteAll" onclick='deleteAll()'>Delete All</button>
+  <button id="createPerson" onclick='createForm()'>Create Person</button><br><br>
+  <form id="createForm" action="" class="form-container" style="display:none">
+    <input type="text" placeholder="Name" id="nameInput"></input>
+    <input type="text" placeholder="Surname" id="surnameInput"></input>
+    <input type="text" placeholder="YYYY-MM-DD" id="dateOfBirthInput"></input>
+    <input type="text" placeholder="Email" id="emailAddressInput"></input>
+    <input type="text" placeholder="Age" id="ageInput"></input>
+    <button type="submit" class="btn" onclick="inputPerson()">Create</button>
+    <button type="submit" class="btn cancel" onclick="closeForm()">Cancel</button>
+  </form>
+  <table id="peopleTable" style="width:100%">
+  <tr>
+    <th onclick='test()'>Name</th>
+    <th>Surname</th>
+    <th>Date Of Birth</th>
+    <th>Email Address</th>
+    <th>Age</th>
+    <th style="width:100px">Delete</th>
+  </tr>
+  <script>main();</script>
+  </table>
   <br>
   <label id="outputText"></label>
   <br>
   <label id="outputTimer"></label>
 </body>
+
 </html>

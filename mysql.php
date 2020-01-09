@@ -11,7 +11,7 @@
     public static $serverName = "localhost";
     public static $username = "root";
     public static $password = "password";
-    public static $dbName = "mysql";
+    public static $dbName = "mysql"; // TODO Create new database
     public static $tableName = "Person";
     public static $Connection;
     
@@ -29,7 +29,7 @@
     function setupDatabase(){
       self::establishDatabasing();
       if(!self::$Connection->query('select 1 from `' . self::$tableName . '` LIMIT 1'))
-      {
+      { // TODO ID as primary key
         $sql = "CREATE TABLE " . self::$tableName . " (
         Name VARCHAR(30) NOT NULL,
         Surname VARCHAR(30) NOT NULL,
@@ -73,17 +73,17 @@
       self::closeDatabasing();
     }
     
-    function savePerson($name, $surname, $dateOfBirth, $emailAddress, $age) {
-      self::establishDatabasing();
+    function savePerson($update, $name, $surname, $dateOfBirth, $emailAddress, $age) {
+      self::establishDatabasing();   
       $saveQry = 'UPDATE ' . self::$tableName . 
-                 ' SET Name=\'' . $name . '\',
-                 Surname=\'' . $surname . '\',
-                 DateOfBirth=\'' . $dateOfBirth . '\', 
-                 EmailAddress=\'' . $emailAddress . '\',
-                 Age=\'' . $age . '\'
-                 WHERE Name=\'' . $name . '\' AND Surname=\'' . $surname . '\';';
+                 ' SET ' . $update . 
+                 ' WHERE Name=\'' . $name . 
+                 '\' AND Surname=\'' . $surname . 
+                 '\' AND DateOfBirth=\'' . $dateOfBirth .
+                 '\' AND EmailAddress=\'' . $emailAddress .
+                 '\' AND Age=' . $age . ';';
       if (self::$Connection->query($saveQry)) {
-        echo "Save successful<br>";
+        echo "Save successful<br>" . $saveQry;;
       }
       else {
           echo "Error saving: " . self::$Connection->error . "<br>";
@@ -91,12 +91,16 @@
       self::closeDatabasing();
     }
     
-    function deletePerson($name, $surname) {
+    function deletePerson($name, $surname, $dateOfBirth, $emailAddress, $age) {
       self::establishDatabasing();
       $delQry = 'DELETE FROM ' . self::$tableName . 
-                 ' WHERE Name=\'' . $name . '\' AND Surname=\'' . $surname . '\';';
+                 ' WHERE Name=\'' . $name . 
+                 '\' AND Surname=\'' . $surname . 
+                 '\' AND DateOfBirth=\'' . $dateOfBirth .
+                 '\' AND EmailAddress=\'' . $emailAddress .
+                 '\' AND Age=' . $age . ';';
       if (self::$Connection->query($delQry)) {
-        echo "Delete successful<br>";
+        echo "Delete successful<br>" + $delQry;
       }
       else {
         echo "Error deleting: " . self::$Connection->error . "<br>";
@@ -108,10 +112,20 @@
       self::establishDatabasing();
       $loadQry = 'SELECT * FROM ' . self::$tableName . ';';
       $qryResult = self::$Connection->query($loadQry);
+      $first = true;
+      echo "[";
       while($row = $qryResult->fetch_assoc()) {
-        echo '[' . $row["Name"] . ", " . $row["Surname"]. ", " . $row["DateOfBirth"] . ", " . 
-             $row["EmailAddress"] . ", " . $row["Age"] ."]<br>";
+        if ($first != true) {
+          echo ',';
+        }
+        echo "{\"Name\":\"" . $row["Name"] . 
+                   "\",\"Surname\":\"" . $row["Surname"] . 
+                   "\",\"DateOfBirth\":\"" . $row["DateOfBirth"] . 
+                   "\",\"EmailAddress\":\"" . $row["EmailAddress"] . 
+                   "\",\"Age\":" . $row["Age"] . "}";
+        $first = false;
       }
+      echo "]";
       self::closeDatabasing();
     }
     
