@@ -5,7 +5,7 @@ body {
 button {
   background-color: black;
   border-color: white;
-  color: red;
+  color: white;
   font-size: 14px;
   width: 150px;
   height: 30px;
@@ -15,7 +15,7 @@ input {
   width: 18%;
   background-color: black;
   border: 0.5px solid white;
-  color: blue;
+  color: silver;
   font-size: 12px;
   width: 200px;
   height: 30px;
@@ -25,7 +25,7 @@ label {
   width: 18%;
   background-color: black;
   border-color: white;
-  color: blue;
+  color: silver;
   font-size: 12px;
   width: 200px;
   height: 30px;
@@ -35,27 +35,30 @@ h1 {
   font-size: 24px;
   background-color: black;
   font-family: verdana;
-  color: blue;
+  color: white;
   height: 34px;
   border: 2px solid white;
   text-align: center;
   width: 300px;
+  cursor: not-allowed;
 }
 
 th {
   font-size: 16px;
   font-family: verdana;
-  text-align: center;
+  text-align: left;
   background-color: black;
-  color: blue;
+  color: white;
   border: 0.5px solid white;
+  cursor: not-allowed;
 }
 
-table, td {
+td {
   font-size: 12px;
   font-family: verdana;
   text-align: left;
   background-color: black;
   color: white;
   border: 0.5px solid white;
+  cursor: pointer;
 }

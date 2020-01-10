@@ -5,21 +5,26 @@
   // SET Password=PASSWORD('password');
   // Then in C:\xampp\phpMyAdmin\config.inc.php:
   // $cfg['Servers'][$i]['password'] = 'password';
-  // Table saved on disk at C:\xampp\mysql\data\mysql      
+  // Table saved on disk at C:\xampp\mysql\data\brettsql      
   class MySqlClass {
     
     public static $serverName = "localhost";
     public static $username = "root";
     public static $password = "password";
-    public static $dbName = "mysql"; // TODO Create new database
-    public static $tableName = "Person";
+    public static $dbName = "brettsql";
+    public static $tableName = "person";
     public static $Connection;
     
     public function establishDatabasing() {
-      self::$Connection = new mysqli(self::$serverName, self::$username, self::$password, self::$dbName);
+      self::$Connection = new mysqli(self::$serverName, self::$username, self::$password);
       if (self::$Connection->connect_error) {
-        die("Connection failed: " . self::$Connection->connect_error . "<br>");
+        die("Connection failed: " . self::$Connection->connect_error);
       }
+      $sql = "CREATE DATABASE IF NOT EXISTS " . self::$dbName;
+      if (self::$Connection->query($sql) !== TRUE) {
+          echo "Error creating database: " . self::$Connection->error;
+      }
+      self::$Connection = new mysqli(self::$serverName, self::$username, self::$password, self::$dbName);
     }
     
     function closeDatabasing() {
@@ -29,7 +34,7 @@
     function setupDatabase(){
       self::establishDatabasing();
       if(!self::$Connection->query('select 1 from `' . self::$tableName . '` LIMIT 1'))
-      { // TODO ID as primary key
+      {
         $sql = "CREATE TABLE " . self::$tableName . " (
         Name VARCHAR(30) NOT NULL,
         Surname VARCHAR(30) NOT NULL,
@@ -38,39 +43,43 @@
         Age int UNSIGNED
         )";
         if (self::$Connection->query($sql)) {
-          echo "Table " . self::$tableName . " created successfully<br>";
+          echo "Success creating table: " . self::$tableName . " table" . "<br>";
         }
         else {
-          echo "Error creating table: " . self::$Connection->error . "<br>";
+          echo "Error creating table: " . self::$Connection->error;
         }
       }
       self::closeDatabasing();
     }
     
     function createPerson($name, $surname, $dateOfBirth, $emailAddress, $age) {
-      self::establishDatabasing();
-      $entry = '\'' . $name . '\', \'' . $surname . '\', \'' . $dateOfBirth . '\', \'' . 
-               $emailAddress . '\', ' . $age;
-      $insertQry =  'INSERT INTO ' . self::$tableName . ' VALUES (' . $entry . ');';
-      if (self::$Connection->query($insertQry)) {
-        echo "[" . $entry . "] added to " . self::$tableName . "<br>";
+      if (!self::loadPerson($emailAddress)) {
+        self::establishDatabasing();
+        $entry = '\'' . $name . '\', \'' . $surname . '\', \'' . $dateOfBirth . '\', \'' . 
+                 $emailAddress . '\', ' . $age;
+        $insertQry =  'INSERT INTO ' . self::$tableName . ' VALUES (' . $entry . ');';
+        if (self::$Connection->query($insertQry)) {
+          echo "Success creating " . $entry . "<br>";
+        }
+        else {
+          echo "Error creating row: " . self::$Connection->error . "<br>";
+        }
+        self::closeDatabasing();
       }
       else {
-        echo "Error creating row: " . self::$Connection->error . "<br>";
+        echo "Note " . $emailAddress . " already exists, hence not added<br>";
       }
-      self::closeDatabasing();
     }
     
-    function loadPerson($name, $surname) {
+    function loadPerson($emailAddress) {
       self::establishDatabasing();
-      $loadQry = 'SELECT * FROM ' . self::$tableName . ' WHERE Name=\'' . $name . 
-                 '\' AND Surname=\'' . $surname . '\';';
+      $loadQry = 'SELECT * FROM ' . self::$tableName . ' WHERE EmailAddress=\'' . $emailAddress . '\';';
       $qryResult = self::$Connection->query($loadQry);
       while($row = $qryResult->fetch_assoc()) {
-        echo '[' . $row["Name"] . ", " . $row["Surname"]. ", " . $row["DateOfBirth"] . ", " . 
-             $row["EmailAddress"] . ", " . $row["Age"] ."]<br>";
+        self::closeDatabasing();
+        return true;
       }
-      self::closeDatabasing();
+      return false;
     }
     
     function savePerson($update, $name, $surname, $dateOfBirth, $emailAddress, $age) {
@@ -83,10 +92,10 @@
                  '\' AND EmailAddress=\'' . $emailAddress .
                  '\' AND Age=' . $age . ';';
       if (self::$Connection->query($saveQry)) {
-        echo "Save successful<br>" . $saveQry;;
+        echo "Success saving: " . $update;
       }
       else {
-          echo "Error saving: " . self::$Connection->error . "<br>";
+          echo "Error saving: " . self::$Connection->error;
       }
       self::closeDatabasing();
     }
@@ -100,10 +109,11 @@
                  '\' AND EmailAddress=\'' . $emailAddress .
                  '\' AND Age=' . $age . ';';
       if (self::$Connection->query($delQry)) {
-        echo "Delete successful<br>" + $delQry;
+        echo "Success deleting " . $name . " " . $surname . " " . $dateOfBirth . " " . 
+                 $emailAddress . " " . $age; 
       }
       else {
-        echo "Error deleting: " . self::$Connection->error . "<br>";
+        echo "Error deleting: " . self::$Connection->error;
       }
       self::closeDatabasing();
     }
@@ -133,10 +143,10 @@
       self::establishDatabasing();
       $loadQry = 'DELETE FROM ' . self::$tableName . ';';
       if (self::$Connection->query($loadQry)) {
-        echo "All rows deleted<br>";
+        echo "Success deleting all rows";
       }
       else {
-        echo "Error deleting all: " . self::$Connection->error . "<br>";
+        echo "Error deleting all: " . self::$Connection->error;
       }
       self::closeDatabasing();
     }

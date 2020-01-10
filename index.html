@@ -3,19 +3,18 @@
 <script type="text/javascript" src="jquery-1.12.3.min.js"></script>
 <script type="text/javascript" src="mainscript.js"></script>
 
-<body>
+<body style="font-family:verdana">
 <h1 id="heading">People Database</h1>
   <button id="create10people" onclick='create10people()'>Create 10 People</button>
   <button id="deleteAll" onclick='deleteAll()'>Delete All</button>
   <button id="createPerson" onclick='createForm()'>Create Person</button><br><br>
-  <form id="createForm" action="" class="form-container" style="display:none">
-    <input type="text" placeholder="Name" id="nameInput"></input>
-    <input type="text" placeholder="Surname" id="surnameInput"></input>
-    <input type="text" placeholder="YYYY-MM-DD" id="dateOfBirthInput"></input>
-    <input type="text" placeholder="Email" id="emailAddressInput"></input>
-    <input type="text" placeholder="Age" id="ageInput"></input>
-    <button type="submit" class="btn" onclick="inputPerson()">Create</button>
-    <button type="submit" class="btn cancel" onclick="closeForm()">Cancel</button>
+  <form id="createForm" style="display:none">
+    <input type="text" placeholder="Name" id="nameInput" required></input>
+    <input type="text" placeholder="Surname" id="surnameInput" required></input>
+    <input type="date" placeholder="YYYY-MM-DD" id="dateOfBirthInput" required></input>
+    <input type="email" placeholder="Email" id="emailAddressInput" required></input>
+    <button onclick="inputPerson()">Create</button>
+    <button onclick="closeCreateForm()">Cancel</button>
   </form>
   <table id="peopleTable" style="width:100%">
   <tr>
@@ -24,14 +23,15 @@
     <th>Date Of Birth</th>
     <th>Email Address</th>
     <th>Age</th>
-    <th style="width:100px">Delete</th>
+    <th style="width:20px">Del?</th>
   </tr>
   <script>main();</script>
   </table>
   <br>
-  <label id="outputText"></label>
+  <label id="feedbackText"></label>
   <br>
-  <label id="outputTimer"></label>
+  <br>
+  <label id="feedbackTimer"></label>
 </body>
 
 </html>
