@@ -24,7 +24,10 @@ session_start();
         <input class="form-control big-font" type="text" style="height:50px" placeholder="Username" id="usernameRegisterInput" value="" required></input>
         <input class="form-control big-font" type="password" style="height:50px" placeholder="Password" id="passwordRegisterInput" value="" required></input>
         <input class="form-control big-font" type="password" style="height:50px" placeholder="Confirm Password" id="confirmPasswordRegisterInput" value="" required></input>
+        <input class="form-control big-font" type="text" style="height:50px" placeholder="Email Code" id="emailCodeRegisterInput" value="" required></input>
+        <button class="btn btn-info big-font" style="width:100%" onclick="emailCode()" id="emailCodeBtn">Send Email Code</button>
         <button class="btn btn-primary big-font" style="width:100%" onclick="register()" id="registerBtn">Register</button>
+        <label id="emailCode" hidden></label>
       <script>$(document).keypress(function(e){ if (e.which == 13){ $("#registerBtn").click();} });</script>
       <h3>Already registered?<a href="login.html"> Login now</a></h3>
       <label class="md-font" id="feedbackText"></label>

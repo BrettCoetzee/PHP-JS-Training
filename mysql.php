@@ -205,10 +205,28 @@ class MySqlClass {
   }
   
   // TODO
-  function emailUser($address) {
-    // SMTP server is taking too much time to integrate
-    // Goto php.ini and search SMTP and openssl
-    mail($address, "Test", "Hi", "From: brett.coetzee@stratusolve.com");
+  function emailPost($data) {
+    
+    // Ensure that the server (from) gmail email address has 'allow less secure apps' enabled
+    // Goto php.ini 
+    // extension=php_openssl.dll
+    // SMTP=smtp.gmail.com
+    // smtp_port=587
+    // sendmail_from = ss.smtp.mailbox@gmail.com
+    // sendmail_path = "\"C:\xampp\sendmail\sendmail.exe\" -t"
+    
+    // Edit C:\xampp\sendmail\sendmail.ini to be as follows:
+    //[sendmail]
+    //smtp_server=smtp.gmail.com
+    //smtp_port=587
+    //error_logfile=error.log
+    //debug_logfile=debug.log
+    //auth_username=ss.smtp.mailbox@gmail.com
+    //auth_password=Test123!
+    //force_sender=ss.smtp.mailbox@gmail.com
+    
+    mail($data->EmailAddress, "Chirp Email Validation Code", $data->Message);
+    echo "Success sending message to: " . $data->EmailAddress;
   }
 }
 ?>

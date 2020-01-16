@@ -91,7 +91,11 @@ var chirp = function() {
 }
 
 var register = function() {
-  var obj = checks("Register");  
+  var obj = checks("Register");
+  if (document.getElementById("emailCodeRegisterInput").value != document.getElementById("emailCode").value) {
+    feedback("Warning: email code validation failed", true); 
+    return null;
+  }
   if (obj != null) {
     var objStr = JSON.stringify(obj);
     $.post("databasing.php", {command: "register",  data: objStr }, function(data) {
@@ -127,6 +131,7 @@ var getInfo = function() {
 
 var loadInformation = function() {
   setupDatabase();
+  document.getElementById("emailCode").value = Math.floor((Math.random() * 1000) + 1);
   getUsername();
   $.post("databasing.php", {command: "loaduser",  data: "" }, function(data) {
     var obj = JSON.parse(data);
@@ -177,7 +182,7 @@ var checks = function(data) {
   }
   var pwd = document.getElementById("password" + data + "Input").value;
   if (!checkPasswordComplexity(pwd)) {
-    feedback("Warning: please enter a valid password (include a lower case, uppercase, special !@#$%^&*, and number character)", true); return null;
+    feedback("Warning: please enter a valid password at least 8 characters long (include a lower case, uppercase, special !@#$%^&*, and number character)", true); return null;
   }
   var confirmPwd = document.getElementById("confirmPassword" + data + "Input").value;
   if (pwd != confirmPwd) {
@@ -211,9 +216,12 @@ var feedback = function(data, override = false) {
 
 // String checking
 function isInvalid(str){
-  return (str.match(/[\-=\[\]{};':"\\|,.<>\/?]/)) || str.str === null || str.match(/^ *$/) !== null;
+  return (str.match(/[\-=\[\]{};':"\\|,<>\/]/)) || str.str === null || str.match(/^ *$/) !== null;
 }
 function checkPasswordComplexity(data) {
+  if (data.length < 8) {
+    return false;
+  }
   if (isInvalid(data)) {
     return false;
   }
@@ -250,11 +258,22 @@ var elapsedTime = function(){
 }
 // ====================================================================================
 
-// TODO
+// SMTP
 // ====================================================================================
-var emailUser = function() {
-  var emailAddress = document.getElementById("emailRegisterInput").value;
-  $.post("databasing.php", {command: "email",  data: emailAddress }, function(data) {
+var emailPost = function() {
+  var obj = { "EmailAddress": document.getElementById("emailText").value, "Message": document.getElementById("chirpInput").value };
+  var objStr = JSON.stringify(obj);
+  $.post("databasing.php", {command: "email",  data: objStr }, function(data) {
+     alert(data);
+  });
+}
+var emailCode = function() {
+  var randomNumber = Math.floor((Math.random() * 1000) + 1);
+  document.getElementById("emailCode").value = randomNumber;
+  var obj = { "EmailAddress": document.getElementById("emailRegisterInput").value, 
+              "Message": "Use the following number as the Email Code: " + randomNumber};
+  var objStr = JSON.stringify(obj);
+  $.post("databasing.php", {command: "email",  data: objStr }, function(data) {
      alert(data);
   });
 }

@@ -27,6 +27,7 @@ session_start();
         <button class="btn btn-primary big-font" style="width:100%" onclick="editInformation()" id="editBtn">Confirm</button>
         <script>$(document).keypress(function(e){ if (e.which == 13){ $("#editBtn").click();} });</script>
         <button class="btn btn-info big-font" style="width:100%" onclick="cancelEditInformation()">Cancel</button>
+        <label id="emailCode" hidden></label>
       <br>
       <br>
       <label class="md-font" id="feedbackText"></label>
