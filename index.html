@@ -1,0 +1,39 @@
+<?php
+session_start();
+?>
+<html >
+  <head>
+    <link rel="icon" href="images/chirp.png">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="ss.css">
+  </head>
+  <body onload='getInfo()' style="background-image: url('images/back2.jpg');font-size:30px;">
+    <script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="mainscript.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+    <br>
+    
+    <div class="container" id="mainContainer" style="display:none;margin-left:20px">
+    <div class="row">
+      <div class="col-md-5" style="background-color:white;padding-bottom:15px;margin-left: auto;margin-right: auto;">
+        <h1 style="border:2px solid black;">
+          <img src="images/chirp.png" style="width:30%"> <label id="infoText"></label>
+        </h1>
+        <button class="btn btn-info big-font" style="width:100%" onclick="gotoEditInformation()">Edit Information</button>
+        <button class="btn btn-warning big-font" style="width:100%" onclick="logout()">Logout</button>
+        <br>
+        <br>
+        Post chirps as <label id="usernameText"></label>:
+        <textarea maxlength="250" rows="4" class="form-control big-font" type="text" placeholder="Chirp" id="chirpInput" name="test" required></textarea>
+        <button class="btn btn-primary big-font" style="width:100%" onclick="chirp()" id="chirpBtn">Post Chirp</button>
+        <script>loadHome();</script>
+        <label class="md-font" id="feedbackText"></label><br>
+      </div>
+      
+      <div class="col-md-7" style="">
+        <ul class="list-group" id="chirpList" style="width:935px;padding-left:30px;padding-right:30px;"></ul>
+      </div>
+      </div>
+    </div>
+  </body>
+</html>
