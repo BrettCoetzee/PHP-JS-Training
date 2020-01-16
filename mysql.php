@@ -112,7 +112,7 @@ class MySqlClass {
   function authenticateUser($data) {
     if (!self::checkUser($data->Username)) {
       return "Warning: Username " . $data->Username . 
-             " does not exist! Please try another username or register a new user.<br>";
+             " does not exist. Please try another username or register a new user.<br>";
     }
     self::establishDatabasing();
     $loadQry = 'SELECT * FROM Users WHERE Username=\'' . $data->Username . '\';';
@@ -121,7 +121,7 @@ class MySqlClass {
       self::closeDatabasing();
       if (password_verify($data->Password, $row["Password"])) {
         $_SESSION["username"] = $data->Username;
-        return "Success authenticating " . $data->Username . "<br>";
+        return "Success<br>";
       }
       else {
         return "Warning: Incorrect password";
@@ -141,7 +141,7 @@ class MySqlClass {
                '\' WHERE Username=\'' . $data->Username  . '\';';
     echo $saveQry;
     if (self::$Connection->query($saveQry)) {
-      echo "Success saving information<br>";
+      echo "Success<br>";
     }
     else {
       echo "Error saving information: " . self::$Connection->error;
@@ -158,18 +158,16 @@ class MySqlClass {
                '\', \'' . $data->Username .
                '\', \'' . password_hash($data->Password, PASSWORD_DEFAULT) . '\'';
       $insertQry =  'INSERT INTO Users VALUES (' . $entry . ');';
-      echo $insertQry;
       if (self::$Connection->query($insertQry)) {
-        echo "Success creating " . $entry . "<br>";
+        echo "Success<br>";
       }
       else {
-        echo "Error resitering user: " . self::$Connection->error . "<br>";
+        echo "Error registering user: " . self::$Connection->error . "<br>";
       }
       self::closeDatabasing();
     }
     else {
-      echo "Error registering user: " . $data->Username . 
-           " already exists. Please specify a new username.<br>";
+      echo "Warning: " . $data->Username . " already exists. Please specify a new username.<br>";
     }
   }
   
@@ -179,7 +177,7 @@ class MySqlClass {
     $entry = '\'' . $username . '\', \'' . $data . '\', now()';
     $insertQry =  'INSERT INTO Posts VALUES (' . $entry . ');';
     if (self::$Connection->query($insertQry)) {
-      echo "Success creating " . $entry . "<br>";
+      echo "Success<br>";
     }
     else {
       echo "Error creating row: " . self::$Connection->error . "<br>";

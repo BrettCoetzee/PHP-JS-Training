@@ -8,10 +8,10 @@ var loadLogin = function() {
 var login = function() {
   var username = document.getElementById("usernameLoginInput").value;
   var pwd = document.getElementById("passwordLoginInput").value;
-  if (isValid(username)) {
+  if (isInvalid(username)) {
     feedback("Warning: please enter a valid username", true); return;
   }
-  if (isValid(pwd)) {
+  if (isInvalid(pwd)) {
     feedback("Warning: please enter a valid password", true); return;
   }
   var obj = { "Username": username, "Password": pwd };
@@ -33,7 +33,7 @@ var loadHome = function() {
   getInfo();
   loadAllPosts(loadTable);
   $.post("databasing.php", { command: "user",  data: "" }, function(data) {
-    if (isValid(data)) {
+    if (isInvalid(data)) {
       window.location.href = "login.html";
     }
     else {
@@ -78,12 +78,11 @@ var loadTable = function(value) {
 
 var chirp = function() {
   var chirpText = document.getElementById("chirpInput").value;
-    if (!isValid(chirpText)) {
+    if (!isInvalid(chirpText)) {
     $.post("databasing.php", {command: "chirp",  data: chirpText}, function(data) {
        feedback(data);
        loadAllPosts(loadTable);
        document.getElementById("chirpInput").value = "";
-       feedback("Success", true);
     });
   }
   else {
@@ -96,7 +95,7 @@ var register = function() {
   if (obj != null) {
     var objStr = JSON.stringify(obj);
     $.post("databasing.php", {command: "register",  data: objStr }, function(data) {
-       feedback(data);
+       feedback(data, true);
        if (data.includes("Success")) {
          window.location.href = "index.html";
        }
@@ -160,11 +159,11 @@ var setupDatabase = function() {
 var checks = function(data) {
   // TODO highlight field at fault
   var name = document.getElementById("name" + data + "Input").value;
-  if (isValid(name)) {
+  if (isInvalid(name)) {
     feedback("Warning: please enter a valid name", true); return null;
   }
   var surname = document.getElementById("surname" + data + "Input").value;
-  if (isValid(surname)) {
+  if (isInvalid(surname)) {
     feedback("Warning: please enter a valid surname", true); return null;
   }
   var email = document.getElementById("email" + data + "Input").value;
@@ -173,12 +172,12 @@ var checks = function(data) {
   }
   var u = document.getElementById("usernameText").textContent;
   var username = data == "Edit" ? u : document.getElementById("username" + data + "Input").value;
-  if (isValid(username)) {
+  if (isInvalid(username)) {
     feedback("Warning: please enter a valid username", true); return null;
   }
   var pwd = document.getElementById("password" + data + "Input").value;
-  if (isValid(pwd)) {
-    feedback("Warning: please enter a valid password", true); return null;
+  if (!checkPasswordComplexity(pwd)) {
+    feedback("Warning: please enter a valid password (include a lower case, uppercase, special !@#$%^&*, and number character)", true); return null;
   }
   var confirmPwd = document.getElementById("confirmPassword" + data + "Input").value;
   if (pwd != confirmPwd) {
@@ -210,11 +209,28 @@ var feedback = function(data, override = false) {
   }
 }
 
-// String safe for databasing checks
-function isValid(str){
+// String checking
+function isInvalid(str){
   return (str.match(/[\-=\[\]{};':"\\|,.<>\/?]/)) || str.str === null || str.match(/^ *$/) !== null;
 }
-
+function checkPasswordComplexity(data) {
+  if (isInvalid(data)) {
+    return false;
+  }
+  if (!data.match("[A-Z]+")) {
+    return false;
+  }
+  if (!data.match("[a-z]+")) {
+    return false;
+  }
+  if (!data.match("[!@#$%^&*]+")) {
+    return false;
+  }
+  if (!data.match("[0-9]+")) {
+    return false;
+  }
+  return true;
+}
 var checkEmailAddress = function(emailStr) {
   if (!emailStr.match(/^[A-Za-z0-9\.]+@[A-Za-z0-9]+\.[A-Za-z0-9\.]+$/i)) {
     feedback("Warning: Please provide a valid email address in the format some.thing@address.com");
