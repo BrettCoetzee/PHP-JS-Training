@@ -2,40 +2,47 @@
 session_start();
 ?>
 <html>
-<head>
-<link rel="icon" href="images/chirp.png">
-<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="ss.css">
-</head>
+  <head>
+    <title>Chirp Registration</title>
+    <link rel="icon" href="images/chirp.png">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="ss.css">
+    <link href="https://fonts.googleapis.com/css?family=Asap+Condensed&display=swap" rel="stylesheet">
+  </head>
 
-<body onload='setupDatabase()' style="background-image: url('images/back2.jpg');font-family:verdana;">
-<script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
-<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="mainscript.js"></script>
-<br>
-<div class="container">
-  <div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6"  style="background-color:white">
-      <h1 style="border:2px solid black;"><img src="images/chirp.png" style="width:100px"><b> Chirp Registration</b></h1>
-        <input class="form-control big-font" type="text" style="height:50px" placeholder="Name" id="nameRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="text" style="height:50px" placeholder="Surname" id="surnameRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="text" style="height:50px" placeholder="Email" id="emailRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="text" style="height:50px" placeholder="Username" id="usernameRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="password" style="height:50px" placeholder="Password" id="passwordRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="password" style="height:50px" placeholder="Confirm Password" id="confirmPasswordRegisterInput" value="" required></input>
-        <input class="form-control big-font" type="text" style="height:50px" placeholder="Email Code" id="emailCodeRegisterInput" value="" required></input>
-        <button class="btn btn-info big-font" style="width:100%" onclick="emailCode()" id="emailCodeBtn">Send Email Code</button>
-        <button class="btn btn-primary big-font" style="width:100%" onclick="register()" id="registerBtn">Register</button>
+<body onload='setupDatabase()' class="bf" >
+  <script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
+  <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="mainscript.js"></script>
+  
+  <div class="container" style="margin-top:10px;">
+    <div class="row">
+    
+      <div class="col-md-3"></div>
+     
+     <div class="col-md-6"  style="background-image: url('images/back.jpg');display:table;">
+        <h1 style="border:2px solid black;"><img src="images/chirp.png" style="width:100px"><b> Chirp Registration</b></h1>
+        <table>
+          <tr><td>Name:</td><td><input maxlength="20" type="text" id="nameRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Surname:</td><td><input maxlength="20" type="text" id="surnameRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Email Address:</td><td><input type="text" id="emailRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Username:</td><td><input maxlength="15" type="text" id="usernameRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Password:</td><td><input type="password" id="passwordRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Confirm Password:</td><td><input type="password" id="confirmPasswordRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Verification Code:</td><td><input type="text" id="emailCodeRegisterInput" oninput="clearFeedback()" required></input></td></tr>
+        </table>
+        <button onclick="emailCode()" id="emailCodeBtn">Send Verification Code Email</button>
+        <button onclick="register()" id="registerBtn">Register</button>
         <label id="emailCode" hidden></label>
-      <script>$(document).keypress(function(e){ if (e.which == 13){ $("#registerBtn").click();} });</script>
-      <h3>Already registered?<a href="login.html"> Login now</a></h3>
-      <label class="md-font" id="feedbackText"></label>
-      <label id="usernameText" hidden></label>
+        <script>$(document).keypress(function(e){ if (e.which == 13){ $("#registerBtn").click();} });</script>
+        <h3>Already registered?<a href="login.html"> Login now</a></h3>
+        <label class="mf" id="feedbackText"></label>
+        <label id="usernameText" hidden></label>
       </div>
-    <div class="col-md-3"></div>
+      
+      <div class="col-md-3"></div>
+      
+    </div>
   </div>
-</div>
 </body>
-
 </html>

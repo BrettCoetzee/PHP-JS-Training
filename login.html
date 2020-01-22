@@ -7,41 +7,73 @@ session_start();
     <link rel="icon" href="images/chirp.png">
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="ss.css">
+    <link href="https://fonts.googleapis.com/css?family=Asap+Condensed&display=swap" rel="stylesheet">
+    <meta charset='utf-8'/>
+		<script type="text/javascript" src="webgl/math.js"></script>
+		<script type="text/javascript" src="webgl/texture3D.js"></script>
+		<script type="text/javascript" src="webgl/shader3D.js"></script>
+		<script type="text/javascript" src="webgl/sphere3D.js"></script>
+		<script type="text/javascript" src="webgl/3D.js"></script>
+    <script type="text/javascript" src="webgl/script.js"></script>
   </head>
-  <body  onload='loadLogin()' style="background-image: url('images/back2.jpg');">
+  <body onload='loadLogin()' class="mf" style="text-align:center">
     <script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="mainscript.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-    <br>
-    <div class="container">
+    <canvas id='canvas1'></canvas>  
+    <div class="container" style="text-align:left">
 
         <div class="col-md-3"></div>
         
-        <div class="col-md-6" style="background-color:white;margin:30px 30px 30px 30px;">
-          <h1 style="border:2px solid black;">
-            <img src="images/chirp.png" style="width:100px"><b> Chirp Login</b>
-          </h1>
-          <input class="form-control big-font" type="text" style="height:50px" placeholder="Username" id="usernameLoginInput" required></input>
-          <input class="form-control big-font" type="password" style="height:50px" placeholder="Password" id="passwordLoginInput" required></input>
-          
-          <div class="row">
-            <div class="col-md-6">
-              <button class="btn btn-primary big-font" style="width:100%;" onclick="login()" id="loginBtn">Login</button>
-            </div>
-            <div class="col-md-6">
-              <h3>
-                <input class="big-font" type="checkbox" style="height:20px;width:20px;" id="rememberLoginInput"> Remember me</input>
-              </h3>
-            </div>
-          </div>
+        <div class="col-md-6" style="background-image: url('images/back.jpg');padding-bottom:20px;margin:20px 0px 0px 0px;">
+          <h1><img src="images/chirp.png" style="width:100px"><b> Login</b></h1>
+          <table>
+          <tr ><td>Username:</td><td><input maxlength="15" type="text" id="usernameLoginInput" oninput="clearFeedback()" required></input></td></tr>
+          <tr><td>Password:</td><td><input type="password" id="passwordLoginInput" oninput="clearFeedback()" required></input></td></tr>
+          </table>
+          <button style="" onclick="login()" id="loginBtn">Login</button>
           
           <script>$(document).keypress(function(e){ if (e.which == 13){ $("#loginBtn").click();} });</script>
-          <label class="md-font" id="feedbackText"></label>
+          
+          New to Chirp?<a href="register.html"> Register now</a>
+          <label class="mf" id="feedbackText"></label>
           <label id="usernameText" hidden></label>
-          <h3>New to Chirp?<a href="register.html"> Register now</a></h3>
         </div>
         
         <div class="col-md-3"></div>
     </div>
+    <br>
+    
+    <script id="3DvertShader" type="x-shader/x-vertex">
+		  attribute vec3 position;
+			uniform mat4 Pmatrix;
+			uniform mat4 Vmatrix;
+			uniform mat4 Mmatrix;
+			attribute vec2 uv;
+      varying vec2 vUV;
+			uniform lowp float PointSize;
+			void main()
+			{
+				gl_Position = Pmatrix * Vmatrix * Mmatrix * vec4(position, 1);
+				gl_PointSize = PointSize;
+				vUV=uv;
+			}
+	  </script>
+		<script id="3DfragShader" type="x-shader/x-fragment">
+			precision lowp float;
+      uniform sampler2D sampler;
+      varying vec2 vUV;
+			uniform float uRed;
+			uniform float uGreen;
+			uniform float uBlue;
+			uniform float uIntensity;
+	    void main(void)
+			{ 
+			  vec4 normal_color = vec4(uRed, uGreen, uBlue, uIntensity);
+				vec3 tex = vec3(texture2D(sampler, vUV));
+			  vec4 texture_color = vec4(tex, 1.0);
+				gl_FragColor = normal_color * texture_color;
+			}
+    </script>
   </body>
 </html>

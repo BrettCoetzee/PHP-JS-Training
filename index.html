@@ -1,39 +1,46 @@
 <?php
 session_start();
 ?>
-<html >
+<html>
   <head>
     <link rel="icon" href="images/chirp.png">
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="ss.css">
+    <link href="https://fonts.googleapis.com/css?family=Asap+Condensed&display=swap" rel="stylesheet">
   </head>
-  <body onload='getInfo()' style="background-image: url('images/back2.jpg');font-size:30px;">
+  <body class="mf">
     <script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="mainscript.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-    <br>
+   
+
+    <div id="mainContainer" style="display:none;margin:20px 0px 0px 20px;">
     
-    <div class="container" id="mainContainer" style="display:none;margin-left:20px">
-    <div class="row">
-      <div class="col-md-5" style="background-color:white;padding-bottom:15px;margin-left: auto;margin-right: auto;">
-        <h1 style="border:2px solid black;">
-          <img src="images/chirp.png" style="width:30%"> <label id="infoText"></label>
-        </h1>
-        <button class="btn btn-info big-font" style="width:100%" onclick="gotoEditInformation()">Edit Information</button>
-        <button class="btn btn-warning big-font" style="width:100%" onclick="logout()">Logout</button>
-        <br>
-        <br>
-        Post chirps as <label id="usernameText"></label>:
-        <textarea maxlength="250" rows="4" class="form-control big-font" type="text" placeholder="Chirp" id="chirpInput" name="test" required></textarea>
-        <button class="btn btn-primary big-font" style="width:100%" onclick="chirp()" id="chirpBtn">Post Chirp</button>
-        <script>loadHome();</script>
-        <label class="md-font" id="feedbackText"></label><br>
-      </div>
+        <div class="col-md-4" style="background-image: url('images/back.jpg');margin:0px 0px 0px 0px;">
       
-      <div class="col-md-7" style="">
-        <ul class="list-group" id="chirpList" style="width:935px;padding-left:30px;padding-right:30px;"></ul>
-      </div>
-      </div>
+          <h1><img id="userImage" style="width:100px"> <label id="infoText" style="text-align:left;vertical-align: middle;"></label></h1>
+          <div class="row" >
+            <div class="col-md-6">
+              <button style="width:90%;" onclick="gotoEditInformation()">Edit Info</button>
+            </div>
+            <div class="col-md-6">
+              <button style="width:100%;" onclick="logout()">Logout</button>
+            </div>
+          </div>
+          
+           Post chirps as <label id="usernameText"></label>: 
+          <textarea maxlength="250" rows="4" class="bf rnd" type="text" placeholder="Chirp" id="chirpInput" oninput="clearFeedback()" required></textarea>
+          <button style="width:100%;" onclick="chirp()" id="chirpBtn">Post Chirp</button>
+          <script>loadHome();</script>
+          <label class="mf" style="margin-left:10px;" id="feedbackText"></label><br>
+          
+        </div>
+        
+        <div class="col-md-8" style="margin:0px 0px 0px 0px;">
+          <ul class="custom-list" id="chirpList" style="width:100%;margin:0px 0px 0px 0px;"></ul>
+        </div>
     </div>
+    
+		
   </body>
 </html>

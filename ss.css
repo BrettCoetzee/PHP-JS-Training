@@ -1,6 +1,94 @@
-.big-font {
-  font-size: 30px;
+.bf {
+  font-family: 'Asap Condensed', sans-serif;
+  font-size: 28px;
 }
-.md-font {
-  font-size: 20px;
+.mf {
+  font-family: 'Asap Condensed', sans-serif;
+  font-size: 24px;
+}
+.rnd {
+  border-radius:10px;
+}
+
+table {
+  font-size: 22px;
+  text-align: right;
+  width: 100%;
+}
+
+textarea {
+  width: 100%;
+  margin: 0px 0px 10px 0px;
+}
+
+div {
+  border-radius:10px;
+}
+
+input {
+  height:40px;
+  width: 98%;
+  border-radius:5px;
+  margin: 7px 7px 7px 7px;
+}
+
+body {
+  background-color:BBBBBB; 
+}
+
+h1 {
+  border:2px solid black;
+  border-radius:10px 10px 0px 0px;
+  background-color:lightgrey;
+}
+
+img {
+  border-radius:8px 0px 0px 0px;
+}
+
+button {
+  border-radius:10px 10px 10px 10px;
+  border:2px solid black;
+  background-color:grey;
+  color: white;
+  width: 100%;
+  margin: 0px 0px 10px 0px;
+}
+
+button:hover {
+  background-color:darkgreen;
+}
+
+panel {
+  overflow-wrap: break-word;
+}
+
+.custom-panel {
+  border-radius:15px;
+}
+
+.custom-list {
+    list-style: none;
+    padding-left: 0;
+    width:935px;
+    padding-left:30px;
+    padding-right:30px;
+    
+}
+.custom-list li {
+    position: relative;
+    padding-left: 20px;
+}
+.custom-list li:before {
+    content: '';
+    width: 50px;
+    height: 30px;
+    border-radius:10px;
+    position: absolute;
+    background-image: none;
+    background-size: cover;
+    background-position: center;
+    left: -40px;
+    top: 18px;
+    transform: translateY(-50%);
 }

@@ -33,7 +33,8 @@ class MySqlClass {
               Surname VARCHAR(30) NOT NULL, 
               EmailAddress CHARACTER VARYING(50) NOT NULL, 
               Username VARCHAR(30) NOT NULL PRIMARY KEY, 
-              Password CHARACTER VARYING(255) NOT NULL)";
+              Password CHARACTER VARYING(255) NOT NULL,
+              ProfilePicture CHARACTER VARYING(200) NOT NULL)";
       if (self::$Connection->query($sql)) {
         echo "Success creating Users table<br>";
       }
@@ -68,10 +69,10 @@ class MySqlClass {
     $qryResult = self::$Connection->query($loadQry);
     while($row = $qryResult->fetch_assoc()) {
       self::closeDatabasing();
-      return "{\"Name\":\"" . $row["Name"] . 
-             "\",\"Surname\":\"" . $row["Surname"] . 
-             "\",\"EmailAddress\":\"" . $row["EmailAddress"] . 
-             "\",\"Password\":\"" . $row["Password"] . "\"}";
+      return "{\"Name\":\"" . filter_var($row["Name"], FILTER_SANITIZE_SPECIAL_CHARS) . 
+             "\",\"Surname\":\"" . filter_var($row["Surname"], FILTER_SANITIZE_SPECIAL_CHARS) . 
+             "\",\"EmailAddress\":\"" . filter_var($row["EmailAddress"], FILTER_SANITIZE_SPECIAL_CHARS) . 
+             "\",\"Username\":\"" . $row["Username"] . "\"}";
     }
     self::closeDatabasing();
     return "";
@@ -111,8 +112,7 @@ class MySqlClass {
   
   function authenticateUser($data) {
     if (!self::checkUser($data->Username)) {
-      return "Warning: Username " . $data->Username . 
-             " does not exist. Please try another username or register a new user.<br>";
+      return "Warning: Incorrect username or password";
     }
     self::establishDatabasing();
     $loadQry = 'SELECT * FROM Users WHERE Username=\'' . $data->Username . '\';';
@@ -124,22 +124,37 @@ class MySqlClass {
         return "Success<br>";
       }
       else {
-        return "Warning: Incorrect password";
+        return "Warning: Incorrect username or password";
       }
     }
     self::closeDatabasing();
-    return "Warning: Incorrect password";
+    return "Warning: Incorrect username or password";
   }
   
   function saveInformation($data) {
     self::establishDatabasing();
     $saveQry = 'UPDATE Users ' . 
-               'SET Name=\'' . $data->Name . 
-               '\', Surname=\'' . $data->Surname .
-               '\', EmailAddress=\'' . $data->Email .
-               '\', Password=\'' . password_hash($data->Password, PASSWORD_DEFAULT) .
-               '\' WHERE Username=\'' . $data->Username  . '\';';
-    echo $saveQry;
+               'SET Name=\'' . filter_var($data->Name, FILTER_SANITIZE_MAGIC_QUOTES) . 
+               '\', Surname=\'' . filter_var($data->Surname, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', EmailAddress=\'' . filter_var($data->Email, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', Username=\'' . filter_var($data->Username, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', ProfilePicture=\'' . filter_var($data->ProfilePicture, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\' WHERE Username=\'' . $_SESSION["username"] . '\';';
+    if (self::$Connection->query($saveQry)) {
+      $_SESSION["username"] = $data->Username;
+      echo "Success<br>";
+    }
+    else {
+      echo "Error saving information: " . self::$Connection->error;
+    }
+    self::closeDatabasing();
+  }
+  
+  function savePassword($data) {
+    self::establishDatabasing();
+    $saveQry = 'UPDATE Users ' . 
+               'SET Password=\'' . password_hash($data->Password, PASSWORD_DEFAULT) .
+               '\' WHERE Username=\'' . $_SESSION["username"] . '\';';
     if (self::$Connection->query($saveQry)) {
       echo "Success<br>";
     }
@@ -152,11 +167,12 @@ class MySqlClass {
   function registerUser($data) {
     if (!self::checkUser($data->Username)) {
       self::establishDatabasing();
-      $entry = '\'' . $data->Name . 
-               '\', \'' . $data->Surname .
-               '\', \'' . $data->Email .
-               '\', \'' . $data->Username .
-               '\', \'' . password_hash($data->Password, PASSWORD_DEFAULT) . '\'';
+      $entry = '\'' . filter_var($data->Name, FILTER_SANITIZE_MAGIC_QUOTES) . 
+               '\', \'' . filter_var($data->Surname, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', \'' . filter_var($data->Email, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', \'' . filter_var($data->Username, FILTER_SANITIZE_MAGIC_QUOTES) .
+               '\', \'' . password_hash($data->Password, PASSWORD_DEFAULT) . 
+               '\', \'' . filter_var($data->ProfilePicture, FILTER_SANITIZE_MAGIC_QUOTES) . '\'';
       $insertQry =  'INSERT INTO Users VALUES (' . $entry . ');';
       if (self::$Connection->query($insertQry)) {
         echo "Success<br>";
@@ -174,7 +190,7 @@ class MySqlClass {
   function createPost($data) {
     $username = $_SESSION["username"];
     self::establishDatabasing();
-    $entry = '\'' . $username . '\', \'' . $data . '\', now()';
+    $entry = '\'' . $username . '\', \'' . filter_var($data, FILTER_SANITIZE_MAGIC_QUOTES) . '\', now()';
     $insertQry =  'INSERT INTO Posts VALUES (' . $entry . ');';
     if (self::$Connection->query($insertQry)) {
       echo "Success<br>";
@@ -195,8 +211,8 @@ class MySqlClass {
       if ($first != true) {
         echo ',';
       }
-      echo "{\"UserId\":\"" . $row["UserId"] . 
-           "\",\"PostText\":\"" . $row["PostText"] . 
+      echo "{\"UserId\":\"" . filter_var($row["UserId"], FILTER_SANITIZE_SPECIAL_CHARS) . 
+           "\",\"PostText\":\"" . filter_var($row["PostText"], FILTER_SANITIZE_SPECIAL_CHARS) . 
            "\",\"PostTimeStamp\":\"" . $row["PostTimeStamp"] . "\"}";
       $first = false;
     }
@@ -204,8 +220,8 @@ class MySqlClass {
     self::closeDatabasing();
   }
   
-  // TODO
   function emailPost($data) {
+  // TODO move the information below to a more secure place
     
     // Ensure that the server (from) gmail email address has 'allow less secure apps' enabled
     // Goto php.ini 

@@ -13,6 +13,7 @@
     case "logout": $returnVal = MySqlClass::unsetUsername($obj); break;
     case "user": $returnVal = MySqlClass::getUsername(); break;
     case "save": $returnVal = MySqlClass::saveInformation($obj); break;
+    case "password": $returnVal = MySqlClass::savePassword($obj); break;
     case "loaduser": $returnVal = MySqlClass::loadUser(MySqlClass::getUsername()); break;
     case "email": $returnVal = MySqlClass::emailPost($obj); break;
     case "cookie": $returnVal = MySqlClass::cookieUser($data); break;
