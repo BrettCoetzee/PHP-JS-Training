@@ -1,22 +1,41 @@
 <?php
   include 'mysql.php';
-  $commandStr = $_POST['command'];
-  $data = $_POST['data'];
-  $obj = json_decode($_POST['data'], false);
-  $returnVal;
-  switch ($commandStr) {
-    case "setup": $returnVal = MySqlClass::setupDatabase(); break;
-    case "chirp": $returnVal = MySqlClass::createPost($data); break;
-    case "load": $returnVal = MySqlClass::loadAllPosts(); break;
-    case "register": $returnVal = MySqlClass::registerUser($obj); break;
-    case "login": $returnVal = MySqlClass::authenticateUser($obj); break;
-    case "logout": $returnVal = MySqlClass::unsetUsername($obj); break;
-    case "user": $returnVal = MySqlClass::getUsername(); break;
-    case "save": $returnVal = MySqlClass::saveInformation($obj); break;
-    case "password": $returnVal = MySqlClass::savePassword($obj); break;
-    case "loaduser": $returnVal = MySqlClass::loadUser(MySqlClass::getUsername()); break;
-    case "email": $returnVal = MySqlClass::emailPost($obj); break;
-    case "cookie": $returnVal = MySqlClass::cookieUser($data); break;
+  $ReturnStr = 'Unset';
+  switch ($_POST['command']) {
+    // Generic
+    case "setup": $ReturnStr = MySqlClass::setupDatabase(); break;
+    case "chirp": $ReturnStr = MySqlClass::createPost($_POST['data'],$_POST['commandValue'],$_POST['commandId']); break;
+    case "load": $ReturnStr = MySqlClass::loadAllPosts(); break;
+    case "register": $ReturnStr = MySqlClass::registerUser(json_decode($_POST['data'])); break;
+    case "login": $ReturnStr = MySqlClass::authenticateUser(json_decode($_POST['data'])); break;
+    case "logout": $ReturnStr = MySqlClass::unsetUsername(json_decode($_POST['data'])); break;
+    case "user": $ReturnStr = MySqlClass::getUsername(); break;
+    case "save": $ReturnStr = MySqlClass::saveInformation(json_decode($_POST['data'])); break;
+    case "password": $ReturnStr = MySqlClass::savePassword(json_decode($_POST['data'])); break;
+    case "loaduser": $ReturnStr = MySqlClass::loadUser(MySqlClass::getUsername()); break;
+    case "email": $ReturnStr = MySqlClass::emailPost(json_decode($_POST['data'])); break;
+    case "cookie": $ReturnStr = MySqlClass::cookieUser($_POST['data']); break;
+
+    // App specific
+    case "updateCommand": $ReturnStr = MySqlClass::updateCommand($_POST['data'], $_POST['id']); break;
+    case "fields": $ReturnStr = MySqlClass::readFields($_POST['data'],$_POST['clause']); break;
+    case "multiQuery": $ReturnStr = MySqlClass::multiQuery($_POST['data']); break;
+    case "curl": $ReturnStr = CURL($_POST['url'], $_POST['data']); break;
   }
-  die($returnVal);
+  die($ReturnStr);
+
+function CURL($Url, $CommandStr, $request = 'GET') {
+    $url = $Url . '?command='.rawurlencode($CommandStr); // Note this is bad practice
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request);
+    $data = curl_exec($ch);
+    if($data === FALSE) {
+        return null;
+    }
+    curl_close($ch);
+    return $data;
+}
 ?>

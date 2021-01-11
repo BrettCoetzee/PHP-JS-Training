@@ -1,3 +1,295 @@
+// App Specific
+// Automation
+var SelectedAutomationId = null;
+var SelectedUrl = null;
+var loadAllAutomations = function(loadAutomations) {
+  $.post("databasing.php", { command: "fields",  data: "Automation", clause:"" }, function(data) {
+     feedback(data);
+     loadAutomations(data);
+  });
+}
+var loadAutomations = function(value) {
+  var cl = document.getElementById("automationList");
+  while(cl.firstChild){ cl.removeChild(cl.firstChild); }
+  var parsedValueArr = JSON.parse(value);
+  parsedValueArr.forEach(function(obj) {
+    for (let FieldName of ["Name","Status","Enabled","Mode"]) {
+      obj[FieldName] = obj[FieldName] == null ? "" : obj[FieldName];
+    }
+    SelectedAutomationId = SelectedAutomationId == null ? obj["Id"] : SelectedAutomationId;
+    SelectedUrl = SelectedUrl == null ? obj["Mode"] : SelectedUrl;
+    var li = document.createElement("li");
+    var newdiv = document.createElement('div');
+    var backgroundcolor = obj["Id"] == SelectedAutomationId ? "#DDDDFF" : "#EEEEEE";
+    newdiv.innerHTML = '<div class="panel panel-info custom-panel" style="background-color:'+backgroundcolor+'"">' +
+                      '<button class="run-button" id="aus'+obj["Id"]+'" onclick="updateSelectedAutomation(this.id)">Select</button>' +
+                     '<input class="automation-name" type="text" id="aut'+obj["Id"]+'" value="' + obj["Name"] + '" onfocusout="updateAutomationRow(this.id)"\></input>' +
+              '<button class="delete-button" id="aud'+obj["Id"]+'"onclick="deleteCommand(this.id)">X</button>' +
+                          '<div class="panel-body" id="apn'+obj["Id"]+'" >'+
+              '<textarea class="command-text" id="aav'+obj["Id"]+'" onfocusout="updateAutomationRow(this.id)" spellcheck="false">'+obj["Mode"]+'</textarea>'+
+                          '</div>' +
+                        '</div>';
+    li.appendChild(newdiv);
+    cl.appendChild(li);
+  });
+  var li = document.createElement("li");
+  var newdiv = document.createElement('div');
+  newdiv.innerHTML = '<button  class="add-button" onclick="addAutomationRow()">New Automation</button>';
+  li.appendChild(newdiv);
+  cl.appendChild(li);
+  loadAllBatches(loadBatches,SelectedAutomationId);
+}
+var addAutomationRow = function() {
+  var updatesArr = ['INSERT INTO Automation (Name) VALUES ("")'];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+    loadAllAutomations(loadAutomations);
+  });
+}
+var updateAutomationRow = function(id) {
+  var idInt = id.substring(3, id.length);
+  SelectedAutomationId = idInt;
+  var updatesArr = ['UPDATE Automation SET Name = "'+document.getElementById("aut"+idInt).value+'", Mode = "'+document.getElementById("aav"+idInt).value+'" where Id = '+idInt];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+    SelectedBatchId = null;
+    SelectedUrl = null;
+    loadAllAutomations(loadAutomations);
+  });
+}
+var updateSelectedAutomation = function(id) {
+  var idInt = id.substring(3, id.length);
+  SelectedBatchId = null;
+  SelectedAutomationId = idInt;
+  var updatesArr = ['UPDATE Config SET AutomationId='+SelectedAutomationId];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+  });
+  $.post("databasing.php", { command: "fields",  data: "Automation", clause:"where Id = "+idInt }, function(automationData) {
+    var parsedValueArr = JSON.parse(automationData);
+    SelectedUrl = parsedValueArr[0]["Mode"];
+    loadAllAutomations(loadAutomations);
+  });
+}
+
+// Batch
+var SelectedBatchId = null;
+var loadAllBatches = function(loadBatches, AutomationId) {
+  $.post("databasing.php", { command: "fields",  data: "Batch", clause:"where AutomationInt = '"+AutomationId+"'" }, function(data) {
+    feedback(data);
+    loadBatches(data);
+  });
+}
+var loadBatches = function(value) {
+  var cl = document.getElementById("batchList");
+  while(cl.firstChild){ cl.removeChild(cl.firstChild); }
+  var parsedValueArr = JSON.parse(value);
+  parsedValueArr.forEach(function(obj) {
+    for (let FieldName of ["Name","Status","Enabled","Mode"]) {
+      obj[FieldName] = obj[FieldName] == null ? "" : obj[FieldName];
+    }
+    SelectedBatchId = SelectedBatchId == null ? obj["Id"] : SelectedBatchId;
+    var li = document.createElement("li");
+    var newdiv = document.createElement('div');
+    var backgroundcolor = obj["Id"] == SelectedBatchId ? "#DDDDFF" : "#EEEEEE";
+    newdiv.innerHTML = '<div class="panel panel-info custom-panel" style="background-color:'+backgroundcolor+'">' +
+        '<button class="run-button" id="bas'+obj["Id"]+'" onclick="updateSelectedBatch(this.id)">Select</button>' +
+                      '<input class="batch-name" type="text" id="bat'+obj["Id"]+'" value="' + obj["Name"] + '" onfocusout="updateBatchRow(this.id)"></input>' +
+                  '<button class="delete-button" id="bad'+obj["Id"]+'"onclick="deleteBatch(this.id)">X</button>' +
+                        '<div class="panel-body" id="bpn'+obj["Id"]+'">' +
+                          obj["Status"] + obj["Mode"] + obj["Enabled"] +
+                         '</div>' +
+                        '</div>';
+    li.appendChild(newdiv);
+    cl.appendChild(li);
+  });
+  var li = document.createElement("li");
+  var newdiv = document.createElement('div');
+  newdiv.innerHTML = '<button  class="add-button" onclick="addBatchRow()">New Batch</button>';
+  li.appendChild(newdiv);
+  cl.appendChild(li);
+  loadAllCommands(loadCommands,SelectedBatchId);
+}
+var addBatchRow = function() {
+  var updatesArr = ['INSERT INTO Batch (AutomationInt) VALUES ('+SelectedAutomationId+')'];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+    loadAllBatches(loadBatches, SelectedAutomationId);
+  });
+}
+var updateBatchRow = function(id) {
+  var idInt = id.substring(3, id.length);
+  var element = document.getElementById("bat"+idInt);
+  var name = element.value;
+  SelectedBatchId = idInt;
+  var updatesArr = ['UPDATE Batch SET Name = "'+name+'" where Id = '+idInt];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+    loadAllBatches(loadBatches, SelectedAutomationId);
+  });
+}
+var updateSelectedBatch = function(id) {
+  var idInt = id.substring(3, id.length);
+  SelectedBatchId = idInt;
+  var updatesArr = ['UPDATE Config SET BatchId='+SelectedBatchId];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+  });
+  loadAllBatches(loadBatches, SelectedAutomationId);
+}
+
+// Command
+var loadAllCommands = function(loadCommands, BatchId) {
+  $.post("databasing.php", { command: "fields",  data: "Command", clause:"where BatchInt = '"+BatchId+"'" }, function(data) {
+    feedback(data);
+    loadCommands(data);
+  });
+}
+var loadCommands = function(value) {
+  var cl = document.getElementById("commandList");
+  while(cl.firstChild) { cl.removeChild( cl.firstChild );}
+  var parsedValueArr = JSON.parse(value);
+  parsedValueArr.forEach(function(obj) {
+    for (let FieldName of ["Name","Status","Enabled","Mode","Command"]) {
+      obj[FieldName] = obj[FieldName] == null ? "" : obj[FieldName];
+    }
+    var li = document.createElement("li");
+    var newdiv = document.createElement('div');
+
+    newdiv.innerHTML = '<div class="panel panel-info custom-panel">' +
+     '<button class="run-button" id="ccr'+obj["Id"]+'"onclick="runCommand(this.id, false)">Run</button>' +
+     '<input class="command-name" id="cmd'+obj["Id"]+'" value="' + obj["Name"] + '" onfocusout="updateCommandRow(this.id)"></input>' +
+        '<button class="delete-button" id="ccd'+obj["Id"]+'"onclick="deleteCommand(this.id)">X</button>' +
+        '<div class="panel-body" id="cpn'+obj["Id"]+'">' +
+        '<textarea class="command-text" id="ccv'+obj["Id"]+'" onfocusout="updateCommandRow(this.id)" spellcheck="false">'+obj["Command"]+'</textarea>'+
+         '</div></div>';
+    li.appendChild(newdiv);
+    cl.appendChild(li);
+    const tx = document.getElementById('ccv'+obj["Id"]);
+    tx.setAttribute('style', 'height:auto;');
+    tx.setAttribute('style', 'height:' + (tx.scrollHeight+20) + 'px;overflow-y:hidden;');
+  });
+  var li = document.createElement("li");
+  var newdiv = document.createElement('div');
+  newdiv.innerHTML = '<button  class="add-button" onclick="addCommandRow()">New Command</button>';
+  li.appendChild(newdiv);
+  cl.appendChild(li);
+}
+var addCommandRow = function() {
+  var updatesArr = ['INSERT INTO Command (BatchInt) VALUES ('+SelectedBatchId+')'];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    feedback(data);
+    loadAllCommands(loadCommands,SelectedBatchId);
+  });
+}
+var updateCommandRow = function(id) {
+  var idInt = id.substring(3, id.length);
+  var name = document.getElementById("cmd"+idInt).value;
+  var commandValue = document.getElementById("ccv"+idInt).value;
+  var updatesArr = ['UPDATE Command SET Name = "'+name+'" where Id ='+idInt ];
+  $.post("databasing.php", { command: "multiQuery", data: JSON.stringify(updatesArr) }, function(data) {
+    $.post("databasing.php", { command: "updateCommand", data: commandValue, id: idInt }, function(data2) {
+      feedback(data2);
+      loadAllCommands(loadCommands,SelectedBatchId);
+    });
+  });
+}
+var runCommand = function(id, run_again) {
+  feedback("Running", true);
+  var idInt = id.substring(3, id.length);
+  if (run_again) {
+    var name = document.getElementById(id).getAttribute("data-value");
+    $.post("databasing.php", { command: "fields",  data: "Command", clause:"where Id = "+idInt }, function(commandData) {
+      var parsedValueArr = JSON.parse(commandData);
+      var commandValue = parsedValueArr[0]["Command"];
+      $.post("databasing.php", { command: "curl", url:SelectedUrl, data: commandValue }, function(data) {
+        $.post("databasing.php", {command: "chirp",  data: data, commandValue: name, commandId: idInt }, function(data2) {
+          feedback("Done: "+data2, true);
+          loadAllPosts(loadPosts);
+        });
+      });
+    });
+  } else {
+    var name = document.getElementById("cmd"+idInt).value;
+    var commandValue = document.getElementById("ccv"+idInt).value;
+    $.post("databasing.php", {command: "curl", url: SelectedUrl, data: commandValue}, function (data) {
+      $.post("databasing.php", {command: "chirp", data: data, commandValue: name, commandId: idInt}, function (data2) {
+        feedback("Done: " + data2, true);
+        loadAllPosts(loadPosts);
+      });
+    });
+  }
+}
+
+// Posts
+var loadAllPosts = function(loadPosts) {
+  $.post("databasing.php", { command: "load",  data: "" }, function(data) {
+    feedback(data);
+    loadPosts(data);
+  });
+}
+var loadPosts = function(value) {
+  var cl = document.getElementById("chirpList");
+  while(cl.firstChild){
+    cl.removeChild( cl.firstChild );
+  }
+  var rowArray = JSON.parse(value);
+  rowArray.sort(function(a,b) { return new Date(b.PostTimeStamp) - new Date(a.PostTimeStamp); });
+  var count = 0;
+  rowArray.forEach(function(obj) {
+    var li = document.createElement("li");
+    var newdiv = document.createElement('div');
+    var fn = "images/" + obj["UserId"] + ".png";
+    if (!imageExists(fn)) {
+      fn = "images/Chirp.png";
+    }
+    var postText = obj["PostText"].replace(/&#10;/g, "");
+    var hasText = false;
+    var postArea = '<div class="panel-body" style="overflow-wrap: break-word;">' + obj["CommandText"];
+    if (postText.match(/\S/)) {
+       postArea += '<textarea id="post'+count+'" class="post-text" onclick="copyToClipboard(this)" style="color:#000000;">' + postText + '</textarea>';
+       hasText = true;
+    }
+    postArea += '</div>';
+    newdiv.innerHTML = '<div class="panel panel-info custom-panel" style="border:1.5px solid lightgrey;padding:3px;margin-bottom:10px;">' +
+        '<button class="run-button" id="pcr'+obj["CommandInt"]+'" data-value="'+obj["CommandText"]+'" onclick="runCommand(this.id, true)">Run</button>' +
+        '<img src="' + fn + '" style="height:29px;padding-left:5px;padding-right:5px;">' + obj["UserId"] + " @ " + obj["PostTimeStamp"] +
+         postArea +
+        '</div>';
+    li.appendChild(newdiv);
+    cl.appendChild(li);
+    if (hasText) {
+      const tx = document.getElementById('post' + count);
+      tx.setAttribute('style', 'height:auto;');
+      tx.setAttribute('style', 'height:' + (tx.scrollHeight + 20) + 'px;overflow-y:hidden;');
+      count++;
+    }
+  });
+}
+
+var loadAllConfig = function(loadConfig) {
+  $.post("databasing.php", { command: "fields",  data: "Config", clause:"" }, function(data) {
+    feedback(data);
+    loadConfig(data);
+  });
+}
+var loadConfig = function(value) {
+  var parsedValueArr = JSON.parse(value);
+  SelectedAutomationId = parsedValueArr[0]["AutomationId"];
+  SelectedBatchId = parsedValueArr[0]["BatchId"];
+  $.post("databasing.php", { command: "fields",  data: "Automation", clause:"where Id = "+SelectedAutomationId }, function(automationData) {
+    var parsedValueArr2 = JSON.parse(automationData);
+    SelectedUrl = parsedValueArr2[0]["Mode"];
+  });
+}
+
+function copyToClipboard(element) {
+  element.select();
+  element.setSelectionRange(0, 99999); /*For mobile devices*/
+  document.execCommand("copy");
+}
+
+// Generic
 // Login
 // ====================================================================================
 var loadLogin = function() {
@@ -43,7 +335,9 @@ var login = function() {
 var loadHome = function() {
   setupDatabase();
   getInfo();
-  loadAllPosts(loadTable);
+  loadAllPosts(loadPosts);
+  loadAllConfig(loadConfig);
+  loadAllAutomations(loadAutomations);
   $.post("databasing.php", { command: "user",  data: "" }, function(username) {
     if (isInvalid(username)) {
       window.location.href = "login.html";
@@ -53,13 +347,17 @@ var loadHome = function() {
       loadPP(username);
     }
   });
-}
-
-var loadAllPosts = function(loadTable) {
-  $.post("databasing.php", { command: "load",  data: "" }, function(data) {
-     feedback(data);
-     loadTable(data);
+  
+  $.post("databasing.php", { command: "user",  data: "" }, function(username) {
+    if (isInvalid(username)) {
+      window.location.href = "login.html";
+    }
+    else {
+      document.getElementById("mainContainer").style.display = "block";
+      loadPP(username);
+    }
   });
+
 }
 
 var logout = function() {
@@ -73,7 +371,7 @@ var chirp = function() {
     if (!isInvalid(chirpText)) {
     $.post("databasing.php", {command: "chirp",  data: chirpText}, function(data) {
        feedback(data, true);
-       loadAllPosts(loadTable);
+       loadAllPosts(loadPosts);
        document.getElementById("chirpInput").value = "";
     });
   }
@@ -121,7 +419,7 @@ var register = function() {
     feedback("Warning: passwords do not match", true); 
     return;
   }
-  if (document.getElementById("emailCodeRegisterInput").value != document.getElementById("emailCode").value) {
+  if (false && document.getElementById("emailCodeRegisterInput").value != document.getElementById("emailCode").value) {
     feedback("Warning: email code validation failed", true); 
     return;
   }
@@ -258,38 +556,9 @@ function imageExists(image_url){
   return req.status != 404;
 }
 
-var loadTable = function(value) {
-  var cl = document.getElementById("chirpList");
-  var clRows = cl.getElementsByTagName('li');
-  while(cl.firstChild){
-    cl.removeChild( cl.firstChild );
-  }
-  var rowArray = JSON.parse(value);
-  var rowInt = 0;
-  rowArray.sort(function(a,b) { 
-    return new Date(b.PostTimeStamp) - new Date(a.PostTimeStamp); 
-  });
-  rowArray.forEach(function(obj) {
-    var li = document.createElement("li");
-    var newdiv = document.createElement('div');
-    var fn = "images/" + obj["UserId"] + ".png";
-    if (!imageExists(fn)) {
-      fn = "images/Chirp.png";
-    }
-    //alert(obj["PostText"].replace());
-    newdiv.innerHTML = '<div class="panel panel-info custom-panel" style="border:1.5px solid lightgrey;padding:3px 3px 3px 3px;"><b><h1' +
-                       ' class="panel-title mf"><img src="' + fn + '" style="height:40px;"> ' + 
-                       obj["UserId"] + "</b> @ " + obj["PostTimeStamp"] + '</h1>' +
-                       '<div class="panel-body" style="overflow-wrap: break-word;">' + 
-                       obj["PostText"].replace(/&#10;/g,"<br>") + '</div></div>';
-    li.appendChild(newdiv);
-    cl.appendChild(li);
-  });
-}
-
 var getUsername = function() {
   $.post("databasing.php", {command: "user",  data: "" }, function(data) {
-    document.getElementById("usernameText").innerHTML = data;
+    document.getElementById("usernameText").innerHTML =data;
   });
 }
 
@@ -379,7 +648,6 @@ var t0 = 0;
 var startTimer = function() {
   t0 = performance.now();
 }
-
 var elapsedTime = function(){
   return (performance.now() - t0).toPrecision(3);
 }

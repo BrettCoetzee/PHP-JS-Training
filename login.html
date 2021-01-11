@@ -24,20 +24,23 @@ session_start();
     <div class="container" style="text-align:left">
 
         <div class="col-md-3"></div>
-        
-        <div class="col-md-6" style="background-image: url('images/back.jpg');padding-bottom:20px;margin:20px 0px 0px 0px;">
-          <h1><img src="images/chirp.png" style="width:100px"><b> Login</b></h1>
-          <table>
-          <tr ><td>Username:</td><td><input maxlength="15" type="text" id="usernameLoginInput" oninput="clearFeedback()" required></input></td></tr>
-          <tr><td>Password:</td><td><input type="password" id="passwordLoginInput" oninput="clearFeedback()" required></input></td></tr>
-          </table>
-          <button style="" onclick="login()" id="loginBtn">Login</button>
+        <div class="col-md-6" style="background-color:FFFFFF;padding-bottom:20px;margin:20px 0px 0px 0px;">
+          <h1 style="text-align:center"><label><b> Login</b></label></h1>
+          <div class="row" style="padding-bottom:10px;">
+            <div class="col-md-3 mf" style="text-align:right"><b>Username</b></div>
+            <div class="col-md-9"><input maxlength="15" type="text" id="usernameLoginInput" oninput="clearFeedback()" required></input></div>
+          </div>
+          <div class="row" style="padding-bottom:10px;">
+            <div class="col-md-3 mf" style="text-align:right"><b>  Password</b> </div>
+            <div class="col-md-9"><input type="password" id="passwordLoginInput" oninput="clearFeedback()" required></input></div></div>
+          <button class="mf" style="height:50px;" onclick="login()" id="loginBtn"><b>Login</b></button>
           
           <script>$(document).keypress(function(e){ if (e.which == 13){ $("#loginBtn").click();} });</script>
-          
-          New to Chirp?<a href="register.html"> Register now</a>
+          <div class="row" style="padding-top:10px;text-align:center">
+          <label class="mf"> New to Chirp?<a href="register.html"> Register now</a></label>
           <label class="mf" id="feedbackText"></label>
           <label id="usernameText" hidden></label>
+          </div>
         </div>
         
         <div class="col-md-3"></div>
