@@ -2,30 +2,27 @@
 session_start();
 class MySqlClass {
     // Generic
-    public static $Connection;
-
+    protected static $Connection;
     public static function establishDatabasing() {
+        $DatabaseNameStr = 'webcat_db';
         self::$Connection = new mysqli("localhost", "root", "password");
         if (self::$Connection->connect_error) {
             die("Connection failed: " . self::$Connection->connect_error . "<br>");
         }
-        $sql = "CREATE DATABASE IF NOT EXISTS chirpdb";
+        $sql = "CREATE DATABASE IF NOT EXISTS ".$DatabaseNameStr;
         if (self::$Connection->query($sql) !== TRUE) {
             echo "Error creating database: " . self::$Connection->error . "<br>";
         }
-        self::$Connection = new mysqli("localhost", "root", "password", "chirpdb");
+        self::$Connection = new mysqli("localhost", "root", "password", $DatabaseNameStr);
     }
-
     public static function closeDatabasing() {
         self::$Connection->close();
     }
-
     public static function setupDatabase() {
         self::createUsersTable();
         self::createPostsTable();
-        self::createAppTables();
+        self::setupAppDatabase();
     }
-
     public static function createUsersTable() {
         self::establishDatabasing();
         if (!self::$Connection->query('select 1 from `Users` LIMIT 1')) {
@@ -44,7 +41,6 @@ class MySqlClass {
         }
         self::closeDatabasing();
     }
-
     public static function createPostsTable() {
         self::establishDatabasing();
         if (!self::$Connection->query('select 1 from `Posts` LIMIT 1')) {
@@ -62,7 +58,6 @@ class MySqlClass {
         }
         self::closeDatabasing();
     }
-
     public static  function loadUser($username) {
         self::establishDatabasing();
         $loadQry = 'SELECT * FROM Users WHERE Username=\'' . $username . '\';';
@@ -77,7 +72,6 @@ class MySqlClass {
         self::closeDatabasing();
         return "";
     }
-
     public static function checkUser($username) {
         self::establishDatabasing();
         $loadQry = 'SELECT * FROM Users WHERE Username=\'' . $username . '\';';
@@ -89,7 +83,6 @@ class MySqlClass {
         self::closeDatabasing();
         return false;
     }
-
     public static function getUsername() {
         if (isset($_SESSION["username"])) {
             return $_SESSION["username"];
@@ -98,18 +91,15 @@ class MySqlClass {
         }
         return "";
     }
-
     public static function cookieUser($username) {
         setcookie("chirpusername", $username, time() + (86400 * 30), '/');
         return "Success setting cookie";
     }
-
     public static function unsetUsername() {
         unset($_SESSION["username"]);
         setcookie("chirpusername", "", -1, '/');
         return "unset cookie";
     }
-
     public static function authenticateUser($data) {
         if (!self::checkUser($data->Username)) {
             return "Warning: Incorrect username or password";
@@ -129,7 +119,6 @@ class MySqlClass {
         self::closeDatabasing();
         return "Warning: Incorrect username or password";
     }
-
     public static function saveInformation($data) {
         self::establishDatabasing();
         $saveQry = 'UPDATE Users ' .
@@ -147,7 +136,6 @@ class MySqlClass {
         }
         self::closeDatabasing();
     }
-
     public static function savePassword($data) {
         self::establishDatabasing();
         $saveQry = 'UPDATE Users ' .
@@ -160,7 +148,6 @@ class MySqlClass {
         }
         self::closeDatabasing();
     }
-
     public static  function registerUser($data) {
         if (!self::checkUser($data->Username)) {
             self::establishDatabasing();
@@ -181,7 +168,6 @@ class MySqlClass {
             echo "Warning: " . $data->Username . " already exists. Please specify a new username.<br>";
         }
     }
-
     public static function createPost($data, $CommandText, $CommandId) {
         $username = $_SESSION["username"];
         self::establishDatabasing();
@@ -194,10 +180,9 @@ class MySqlClass {
         }
         self::closeDatabasing();
     }
-
     public static function loadAllPosts() {
         self::establishDatabasing();
-        $loadQry = 'SELECT * FROM Posts;';
+        $loadQry = 'SELECT * FROM Posts WHERE UserId = "'.self::getUsername().'";';
         $qryResult = self::$Connection->query($loadQry);
         $first = true;
         echo "[";
@@ -215,7 +200,6 @@ class MySqlClass {
         echo "]";
         self::closeDatabasing();
     }
-
     public static function emailPost($data) {
         // TODO move the information below to a more secure place
 
@@ -242,10 +226,29 @@ class MySqlClass {
     }
 
     // App specific
+    protected static $AppConnection;
+    public static function establishAppDatabasing() {
+        $DatabaseNameStr = self::getUsername();
+        self::$AppConnection = new mysqli("localhost", "root", "password");
+        if (self::$AppConnection->connect_error) {
+            die("Connection failed: " . self::$AppConnection->connect_error . "<br>");
+        }
+        $sql = "CREATE DATABASE IF NOT EXISTS ".$DatabaseNameStr;
+        if (self::$AppConnection->query($sql) !== TRUE) {
+            echo "Error creating database: " . self::$AppConnection->error . "<br>";
+        }
+        self::$AppConnection = new mysqli("localhost", "root", "password", $DatabaseNameStr);
+    }
+    public static function closeAppDatabasing() {
+        self::$AppConnection->close();
+    }
+    public static function setupAppDatabase() {
+        self::createAppTables();
+    }
     public static function createAppTables() {
-        self::establishDatabasing();
+        self::establishAppDatabasing();
         foreach (array("Automation" => null, "Batch" => array("AutomationInt"), "Command" => array("BatchInt", "Path", "Command"), "Report" => array("CommandInt")) as $Key => $Value) {
-            if (!self::$Connection->query("select 1 from " . $Key . " LIMIT 1")) {
+            if (!self::$AppConnection->query("select 1 from " . $Key . " LIMIT 1")) {
                 $sql = "CREATE TABLE " . $Key . " (Id int NOT NULL AUTO_INCREMENT, Name VARCHAR(50), Status TEXT(65535), Mode TEXT(65535), Enabled VARCHAR(50)";
                 if (is_array($Value)) {
                     foreach ($Value as $Attribute) {
@@ -253,60 +256,60 @@ class MySqlClass {
                     }
                 }
                 $sql .= ", PRIMARY KEY(Id))";
-                if (self::$Connection->query($sql)) {
+                if (self::$AppConnection->query($sql)) {
                     echo "Success creating " . $Key . ":" . json_encode($Value) . " table<br>";
                 } else {
-                    echo "Error creating ".$Key." table: " . self::$Connection->error . "<br>";
+                    echo "Error creating ".$Key." table: " . self::$AppConnection->error . "<br>";
                 }
             } else {
                 echo $Key;
             }
         }
         $Key = "Config";
-        if (!self::$Connection->query("select 1 from " . $Key . " LIMIT 1")) {
+        if (!self::$AppConnection->query("select 1 from " . $Key . " LIMIT 1")) {
             $sql = "CREATE TABLE " . $Key . " (Id int NOT NULL AUTO_INCREMENT, AutomationId int, BatchId int";
             $sql .= ", PRIMARY KEY(Id))";
-            if (self::$Connection->query($sql)) {
+            if (self::$AppConnection->query($sql)) {
                 echo "Success creating " . $Key . " table<br>";
             } else {
-                echo "Error creating " . $Key . " table: " . self::$Connection->error . "<br>";
+                echo "Error creating " . $Key . " table: " . self::$AppConnection->error . "<br>";
             }
         } else {
             echo $Key;
         }
-        self::closeDatabasing();
+        self::closeAppDatabasing();
     }
     public static function readFields($TableNameStr,$ClauseStr = '') {
-      self::establishDatabasing();
+      self::establishAppDatabasing();
       $loadQry = 'SELECT * FROM '.$TableNameStr.' '.$ClauseStr;
-        $qryResult = self::$Connection->query($loadQry);
+        $qryResult = self::$AppConnection->query($loadQry);
         $ReturnArr = array();
         while ($row = $qryResult->fetch_assoc()) {
             $ReturnArr[] = $row;
         }
         echo json_encode($ReturnArr);
-      self::closeDatabasing();
+      self::closeAppDatabasing();
     }
     public static function multiQuery($QueryArrStr) {
-        self::establishDatabasing();
+        self::establishAppDatabasing();
         $QueryArr = json_decode($QueryArrStr);
         foreach ($QueryArr as $QueryStr) {
-            if (!self::$Connection->query($QueryStr)) {
-                echo "Error updating table: " . self::$Connection->error . "<br>";
+            if (!self::$AppConnection->query($QueryStr)) {
+                echo "Error updating table: " . self::$AppConnection->error . "<br>";
             }
         }
         echo "Done with multiquery";
-        self::closeDatabasing();
+        self::closeAppDatabasing();
     }
     public static function updateCommand($CommandStr, $CommandId) {
-        self::establishDatabasing();
+        self::establishAppDatabasing();
         $FilteredCommandStr = filter_var($CommandStr, FILTER_SANITIZE_MAGIC_QUOTES);
         $QueryStr = 'UPDATE Command SET Command ="'.$FilteredCommandStr.'" WHERE Id = '.$CommandId;
-        if (!self::$Connection->query($QueryStr)) {
-            echo "Error updating table: " . self::$Connection->error . "<br>";
+        if (!self::$AppConnection->query($QueryStr)) {
+            echo "Error updating table: " . self::$AppConnection->error . "<br>";
         }
         echo "Done with updateCommand";
-        self::closeDatabasing();
+        self::closeAppDatabasing();
     }
 }
 ?>

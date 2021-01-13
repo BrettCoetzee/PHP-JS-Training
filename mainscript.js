@@ -241,7 +241,7 @@ var loadPosts = function(value) {
     var newdiv = document.createElement('div');
     var fn = "images/" + obj["UserId"] + ".png";
     if (!imageExists(fn)) {
-      fn = "images/Chirp.png";
+      fn = "images/webcat.png";
     }
     var postText = obj["PostText"].replace(/&#10;/g, "");
     var hasText = false;
@@ -333,31 +333,21 @@ var login = function() {
 // Home
 // ====================================================================================
 var loadHome = function() {
-  setupDatabase();
-  getInfo();
-  loadAllPosts(loadPosts);
-  loadAllConfig(loadConfig);
-  loadAllAutomations(loadAutomations);
+  // Security
   $.post("databasing.php", { command: "user",  data: "" }, function(username) {
     if (isInvalid(username)) {
       window.location.href = "login.html";
     }
     else {
+      setupDatabase();
+      getInfo();
+      loadAllPosts(loadPosts);
+      loadAllConfig(loadConfig);
+      loadAllAutomations(loadAutomations);
       document.getElementById("mainContainer").style.display = "block";
       loadPP(username);
     }
   });
-  
-  $.post("databasing.php", { command: "user",  data: "" }, function(username) {
-    if (isInvalid(username)) {
-      window.location.href = "login.html";
-    }
-    else {
-      document.getElementById("mainContainer").style.display = "block";
-      loadPP(username);
-    }
-  });
-
 }
 
 var logout = function() {
@@ -423,7 +413,7 @@ var register = function() {
     feedback("Warning: email code validation failed", true); 
     return;
   }
-  var obj =  { "Name": name, "Surname": surname, "Email": email, "Username": username, "Password": pwd, "ProfilePicture": "images/Chirp.png" };
+  var obj =  { "Name": name, "Surname": surname, "Email": email, "Username": username, "Password": pwd, "ProfilePicture": "images/webcat.png" };
   var objStr = JSON.stringify(obj);
   $.post("databasing.php", {command: "register",  data: objStr }, function(data) {
      feedback(data, true);
@@ -439,7 +429,7 @@ var loadPP = function(username) {
     document.getElementById("userImage").src = fn;
   }
   else {
-    document.getElementById("userImage").src = "images/Chirp.png";
+    document.getElementById("userImage").src = "images/webcat.png";
   }
 }
 // ====================================================================================

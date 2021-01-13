@@ -25,7 +25,7 @@
   die($ReturnStr);
 
 function CURL($Url, $CommandStr, $request = 'GET') {
-    $url = $Url . '?command='.rawurlencode($CommandStr); // Note this is bad practice
+    $url = $Url . '?command='.rawurlencode($CommandStr); // Note this is bad practice, rather use params
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
