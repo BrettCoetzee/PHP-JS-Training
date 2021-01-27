@@ -11,24 +11,26 @@ session_start();
   <body class="mf">
     <script type="text/javascript" src="assets/js/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="mainscript.js"></script>
+    <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
     <div id="mainContainer" style="display:none;margin:0;padding:0">
       <div class="row" style="color:#222222;background-color:#EEEEEE;margin:0;padding:0;height:26px;width:100%;overflow-x:hidden;overflow-y:hidden">
-          <div class="col-md-8" style="margin:0;padding:0px">
+          <div class="col-md-6" style="margin:0;padding:0px">
             <img id="userImage" style="height:26px;float:left">
             <label id="usernameText" style="text-overflow:ellipsis;overflow:hidden;padding-left:15px"></label>
             <label id="infoText" style="text-overflow:ellipsis;overflow:hidden;padding-left:15px"></label>
             <label class="infoText" style="text-overflow:ellipsis;overflow:hidden;padding-right:15px;float:right" id="feedbackText"></label>
           </div>
-        <div class="col-md-2" style="margin:0;padding:0px"><b><button class="mf" onclick="gotoEditInformation()" style="background-color:#CCCCDD;">Edit Info</button></b></div>
         <div class="col-md-2" style="margin:0;padding:0px"><b><button class="mf" onclick="logout()" style="background-color:#CCCCDD;">Logout</button></b></div>
+        <div class="col-md-2" style="margin:0;padding:0px"><b><button class="mf" onclick="gotoEditInformation()" style="background-color:#CCDDCC;">Edit Info</button></b></div>
+        <div class="col-md-2" style="margin:0;padding:0px"><b><button class="mf" onclick="clearResults()" style="background-color:#DDCCCC;">Clear Results</button></b></div>
       </div>
         <script>loadHome();</script>
       <div class="row" style="margin:0;padding:0;">
         <div class="col-md-2" style="margin:0;padding:10px"><ul class="custom-list" id="automationList"></ul></div>
         <div class="col-md-2" style="margin:0;padding:10px"><ul class="custom-list" id="batchList"></ul></div>
         <div class="col-md-5" style="margin:0;padding:10px"><ul class="custom-list" id="commandList"></ul></div>
-        <div class="col-md-3" style="margin:0;padding:10px"><ul class="custom-list" id="chirpList" ></ul></div>
+        <div class="col-md-3" style="margin:0;padding:10px"><ul class="custom-list" id="postList" ></ul></div>
       </div>
   </body>
 </html>

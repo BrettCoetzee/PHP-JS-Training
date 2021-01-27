@@ -249,7 +249,7 @@ class MySqlClass {
         self::establishAppDatabasing();
         foreach (array("Automation" => null, "Batch" => array("AutomationInt"), "Command" => array("BatchInt", "Path", "Command"), "Report" => array("CommandInt")) as $Key => $Value) {
             if (!self::$AppConnection->query("select 1 from " . $Key . " LIMIT 1")) {
-                $sql = "CREATE TABLE " . $Key . " (Id int NOT NULL AUTO_INCREMENT, Name VARCHAR(50), Status TEXT(65535), Mode TEXT(65535), Enabled VARCHAR(50)";
+                $sql = "CREATE TABLE " . $Key . " (Id int NOT NULL AUTO_INCREMENT, Name VARCHAR(50), Status TEXT(65535), Mode TEXT(65535), Enabled VARCHAR(50), OrderInt int NOT NULL";
                 if (is_array($Value)) {
                     foreach ($Value as $Attribute) {
                         $sql .= "," . $Attribute . (strpos($Attribute, "Int") !== false ? " int" : " TEXT(65535)");
