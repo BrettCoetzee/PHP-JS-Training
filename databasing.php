@@ -31,11 +31,16 @@ function CURL($Url, $CommandStr, $request = 'GET') {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request);
+
+    // Multithreading
+//    curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+//    curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
     $data = curl_exec($ch);
     if($data === FALSE) {
         return null;
     }
     curl_close($ch);
+
     return $data;
 }
 ?>

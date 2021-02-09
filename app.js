@@ -304,8 +304,8 @@ var runCommand = function(id, run_again) {
         var commandValue = document.getElementById("ccv"+idInt).value;
         $.post("databasing.php", {command: "curl", url: SelectedUrl, data: commandValue}, function (data) {
             $.post("databasing.php", {command: "chirp", data: data, commandValue: name, commandId: idInt}, function (data2) {
-                feedback("Done: " + data2, true);
-                loadAllPosts(loadPosts);
+                    feedback("Done: " + data2, true);
+                    loadAllPosts(loadPosts);
             });
         });
     }
