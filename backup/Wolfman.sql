@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2021 at 08:22 AM
+-- Generation Time: Mar 05, 2021 at 08:08 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -43,11 +43,11 @@ CREATE TABLE `Automation` (
 
 INSERT INTO `Automation` (`Id`, `Name`, `Status`, `Mode`, `Enabled`, `OrderInt`) VALUES
 (1, 'Policies', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Policies-Module/wolftest.php', NULL, 1),
-(2, 'Finance', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Finance-Module/test.php', NULL, 3),
+(2, 'Finance', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Finance-Module/wolftest.php', NULL, 3),
 (3, 'Main', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Main-Module/test.php', NULL, 2),
 (4, 'Communications', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Communications-Module/wolftest.php', NULL, 4),
-(7, 'Other', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Policies-Module/test2.php', NULL, 6),
-(9, 'Members', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Communications-Module/bretttest.php', NULL, 5);
+(7, 'Other', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Policies-Module/wolftest.php', NULL, 6),
+(9, 'Members', NULL, 'https://mobilife-dev0.stratusolvecloud.com/Communications-Module/wolftest.php', NULL, 5);
 
 -- --------------------------------------------------------
 
@@ -95,7 +95,11 @@ INSERT INTO `Batch` (`Id`, `Name`, `Status`, `Mode`, `Enabled`, `AutomationInt`,
 (29, 'Individual', NULL, NULL, NULL, 9, 1),
 (30, 'TODO', NULL, NULL, NULL, 2, 5),
 (32, 'Log', NULL, NULL, NULL, 1, 11),
-(33, 'Collections DebiCheck', NULL, NULL, NULL, 1, 3);
+(33, 'Collections DebiCheck', NULL, NULL, NULL, 1, 3),
+(35, 'User Role', NULL, NULL, NULL, 9, 2),
+(36, 'Mandates', NULL, NULL, NULL, 2, 6),
+(37, NULL, NULL, NULL, NULL, 9, 3),
+(38, 'Optimisation', NULL, NULL, NULL, 7, 3);
 
 -- --------------------------------------------------------
 
@@ -120,16 +124,16 @@ CREATE TABLE `Command` (
 --
 
 INSERT INTO `Command` (`Id`, `Name`, `Status`, `Mode`, `Enabled`, `BatchInt`, `Path`, `Command`, `OrderInt`) VALUES
-(1, 'Reset - Update CollectionSummary SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionSummary SET CollectionStatus=\"Unprepared\" WHERE Id = 3797\');', 3),
-(2, 'Update CollectionMethod SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=408 WHERE Id = 3\');', 1),
-(3, 'Update Policies SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'update policy set DebitOrderDay = 8, NettPremium = 0.01 where CollectionMethod = 3 limit 200\');', 2),
+(1, 'Reset - Update CollectionSummary SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionSummary SET CollectionStatus=\"Unprepared\" WHERE Id = 3801\');', 3),
+(2, 'Update CollectionMethod SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=411 WHERE Id = 3\');', 1),
+(3, 'Update Policies SSVS', NULL, NULL, NULL, 4, NULL, 'CollectionManager::executeCollectionQuery(\'update policy set DebitOrderDay = 2, NettPremium = 0.01 where Active = 1 AND CollectionMethod = 1 limit 50\');', 2),
 (4, 'Reset - Update CollectionSummary Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\' UPDATE CollectionSummary SET CollectionStatus=\"Unprepared\" WHERE Id = 3786\');', 3),
-(5, 'Update CollectionMethod Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\' UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=514 WHERE Id = 4\');', 1),
-(6, 'Update Policies  Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\' update policy set DebitOrderDay = 25, NettPremium = 0.01 where CollectionMethod = 4\');', 2),
+(5, 'Update CollectionMethod Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\' UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=550 WHERE Id = 4\');', 1),
+(6, 'Update Policies  Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\' update policy set DebitOrderDay = 2, NettPremium = 0.01 where Active = 1 AND CollectionMethod = 4 LIMIT 200\');', 2),
 (7, 'Reset Response Items', NULL, NULL, NULL, 6, NULL, 'CollectionManager::executeCollectionQuery(\'update CollectionResponseItem set RowStatus = \"Pending\", CollectionItem = NULL, PaymentId = NULL\');', 4),
 (8, 'Update Response Items to Processed', NULL, NULL, NULL, 6, NULL, 'CollectionManager::executeCollectionQuery(\'update CollectionResponseItem set RowStatus = \"Processed\"\');', 6),
 (9, 'Reset Delete All', NULL, NULL, NULL, 6, NULL, 'CollectionManager::executeCollectionQuery(\' delete from CollectionResponseItem\');', 5),
-(10, 'Get Latest Limited', NULL, NULL, NULL, 7, NULL, 'foreach (CollectionTextFile::QueryArray(QQ::All(), \nQQ::Clause(\n  QQ::Select(QQN::CollectionTextFile()->Id, \n          QQN::CollectionTextFile()->FileType), \n  QQ::OrderBy(QQN::CollectionTextFile()->Id, false),\n  QQ::LimitInfo(10)\n)\n) as $CTFObj) {\n  echo $CTFObj->Id.\' \'.$CTFObj->FileType.\'\\n\';\n}', 2),
+(10, 'Get Latest Limited', NULL, NULL, NULL, 7, NULL, 'foreach (CollectionTextFile::QueryArray(QQ::Equal(QQN::CollectionTextFile()->CollectionMethod, 5), \nQQ::Clause(\n  QQ::Select(QQN::CollectionTextFile()->Id, \n          QQN::CollectionTextFile()->FileType), \n  QQ::OrderBy(QQN::CollectionTextFile()->Id, false),\n  QQ::LimitInfo(10)\n)\n) as $CTFObj) {\n  echo $CTFObj->Id.\' \'.$CTFObj->FileType.\'\\n\';\n}', 2),
 (12, 'Purge Processed', NULL, NULL, NULL, 6, NULL, 'CollectionManager::executeCollectionQuery(\' delete from CollectionResponseItem WHERE RowStatus != \"Pending\"\');', 3),
 (13, 'Reset CollectionItems', NULL, NULL, NULL, 8, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionItem SET Notes=\"Initialized\",  CollectionItemStatus = \"Not Submitted\" WHERE UniqueReference IN (\"SPA00003      201112\",\"0989315868\")\');', 1),
 (14, 'Delete New Transactions', NULL, NULL, NULL, 1, NULL, 'MobilityTransaction::GetDatabase()->Query(\'\nDELETE FROM MobilityTransaction WHERE PremiumMonth=\"11/20\"\n\');', 1),
@@ -184,7 +188,7 @@ INSERT INTO `Command` (`Id`, `Name`, `Status`, `Mode`, `Enabled`, `BatchInt`, `P
 (85, 'Reset - Delete CollectionItems Naedo', NULL, NULL, NULL, 5, NULL, 'CollectionManager::executeCollectionQuery(\'DELETE FROM CollectionItem WHERE CollectionSummary = 3786\');', 4),
 (94, 'Objects and KVP', NULL, NULL, NULL, 25, NULL, '$Arr = [(object)[\"Test\" => 1],(object)[\"Test\" => 2],(object)[\"Test\" => 3]];\n$KvpArr = Helper::getKvp($Arr, \"Test\");\necho json_encode(array_keys($KvpArr));\necho is_array($Arr);\necho count($Arr);', 1),
 (96, 'Pointers by string', NULL, NULL, NULL, 26, NULL, '$a=\"b\";\n$b=\"c\";\n$c=\"d\";\n$d=\"e\";\n$e=\"f\";\n\necho $a.\"-\";\necho $$a.\"-\";   //Same as $b\necho $$$a.\"-\";  //Same as $$b or $c\necho $$$$a.\"-\"; //Same as $$$b or $$c or $d\necho $$$$$a;    //Same as $$$$b or $$$c or $$d or $e', 1),
-(97, 'Generate pending PolicyNotifications', NULL, NULL, NULL, 27, NULL, '$QuantityInt = 60;\n$SqlStr = \'\';\nfor ($i = 0; $i < $QuantityInt; $i++) {\nswitch ($i % 3) {\ncase 0: $CommunicationId = 626; break;\ncase 1: $CommunicationId = 743; break;\ncase 2: $CommunicationId = 744; break;\n}\n$SqlStr .= \'INSERT INTO communications_dev0.PolicyNotification (PolicyId, PolicyScheduleId, Notified, Communication, DateCreated, IndividualId) VALUES (1,405676,0, \'.$CommunicationId.\', \"2021-02-04\", 328972);\';\n}\necho $SqlStr;\nPolicyNotification::GetDatabase()->MultiQuery($SqlStr);', 3),
+(97, 'Generate pending PolicyNotifications', NULL, NULL, NULL, 27, NULL, '$QuantityInt = 60;\n$SqlStr = \'\';\nfor ($i = 0; $i < $QuantityInt; $i++) {\nswitch ($i % 3) {\ncase 0: $CommunicationId = 623; break;\ncase 1: $CommunicationId = 623; break;\ncase 2: $CommunicationId = 623; break;\n}\n$SqlStr .= \'INSERT INTO communications_dev0.PolicyNotification (PolicyId, PolicyScheduleId, Notified, Communication, DateCreated, IndividualId) VALUES (1,743716,0, \'.$CommunicationId.\', \"2021-02-04\", 526933);\';\n}\necho $SqlStr;\nPolicyNotification::GetDatabase()->MultiQuery($SqlStr);', 3),
 (98, 'Change Brett to MobiLifeAdmin', NULL, NULL, NULL, 28, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 9 WHERE SystemModule = 3 AND Individual = 328972\');', 1),
 (99, 'Change Brett to MobiLifeUser', NULL, NULL, NULL, 28, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 10 WHERE SystemModule = 3 AND Individual = 328972\');', 2),
 (101, 'Add SystemUserRoleLinks', NULL, NULL, NULL, 29, NULL, 'SystemModuleRoleLink::GetDatabase()->MultiQuery(\'INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 1, 1); INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 2, 5);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 3, 10);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 4, 13);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 5, 17);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 6, 21);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 7, 25);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 8, 39);INSERT INTO members_dev0.SystemModuleRoleLink (Individual, SystemModule, SystemUserRole) VALUES (329055, 9, 41);\');', 1),
@@ -200,9 +204,21 @@ INSERT INTO `Command` (`Id`, `Name`, `Status`, `Mode`, `Enabled`, `BatchInt`, `P
 (112, 'Delete All PolicyNotifications', NULL, NULL, NULL, 27, NULL, 'PolicyNotification::GetDatabase()->NonQuery(\'DELETE FROM PolicyNotification\');', 8),
 (113, 'Change Lesenya to MobiLifeAdmin', NULL, NULL, NULL, 28, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 9 WHERE SystemModule = 3 AND Individual = 328973\');', 3),
 (114, 'Change Lesenya to MobiLifeUser', NULL, NULL, NULL, 28, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 10 WHERE SystemModule = 3 AND Individual = 328973\');', 4),
-(115, 'Update Debicheck Policies', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'update policy set DebitOrderDay = 10, NettPremium = 0.01 where CollectionMethod = 7 limit 200\');', 1),
-(116, 'Update CollectionMethod Debicheck', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=3 WHERE Id = 7\');', 2),
-(117, 'Reset - Update CollectionSummary DebiCheck', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionSummary SET CollectionStatus=\"Unprepared\" WHERE Id = 3799\');', 3);
+(115, 'Update Debicheck Policies', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'update policy set DebitOrderDay = 11, NettPremium = 0.01 where CollectionMethod = 7 limit 200\');', 1),
+(116, 'Update CollectionMethod Debicheck', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionMethod SET BeingProcessed=\"False\", CurrentSequenceNumber=3 WHERE Id = 8\');', 2),
+(117, 'Reset - Update CollectionSummary DebiCheck', NULL, NULL, NULL, 33, NULL, 'CollectionManager::executeCollectionQuery(\'UPDATE CollectionSummary SET CollectionStatus=\"Unprepared\" WHERE Id = 3799\');', 3),
+(120, 'Change Queeneth to ThirdPartyUser', NULL, NULL, NULL, 35, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 6 WHERE SystemModule = 4 AND Individual = 328972\');', 1),
+(121, 'Change Queeneth to MobiLifeAdmin', NULL, NULL, NULL, 35, NULL, 'SystemModuleRoleLink::GetDatabase()->NonQuery(\'UPDATE SystemModuleRoleLink set SystemUserRole = 9 WHERE SystemModule = 4 AND Individual = 328972\');', 2),
+(122, 'Clean up mandate DBs', NULL, NULL, NULL, 36, NULL, '//Mandate::GetDatabase()->MultiQuery(\'DELETE FROM Mandate;DELETE FROM MandateItem;DELETE FROM MandateGroup;DELETE FROM MandateTextFile\');', 2),
+(123, 'Get Policies without mandate', NULL, NULL, NULL, 36, NULL, '$CollectionMethodId = 8;\n$ResultObj = Policy::GetDatabase()->Query(\'SELECT Id FROM \'.Policy::GetDatabase()->Database.\'.Policy pol WHERE \n            (SELECT Id FROM \'.Mandate::GetDatabase()->Database.\'.Mandate man WHERE man.PolicyId = pol.Id) IS NULL AND pol.CollectionMethod = \'.$CollectionMethodId);\n        $PolicyIdArr = array();\n        while ($AttributesArr = $ResultObj->FetchAssocArray()) {\n            $PolicyIdArr[] = $AttributesArr[\'Id\'];\n        }\necho json_encode($PolicyIdArr);', 3),
+(124, 'Get data ready for Mandate Submission', NULL, NULL, NULL, 36, NULL, '$CollectionMethodId = 8;\n$ResultObj = Policy::GetDatabase()->Query(\'SELECT Id FROM \'.Policy::GetDatabase()->Database.\'.Policy pol WHERE \n            (SELECT Id FROM \'.Mandate::GetDatabase()->Database.\'.Mandate man WHERE man.PolicyId = pol.Id) IS NULL AND pol.CollectionMethod = \'.$CollectionMethodId);\n$PolicyIdArr = array();\nwhile ($AttributesArr = $ResultObj->FetchAssocArray()) {\n    $PolicyIdArr[] = $AttributesArr[\'Id\'];\n}\n\n$UniquePolicyNumberStr = \"TMA01663\";\n$QueryStr = \'UPDATE policies_dev0.Policy pol\nSET \npol.BankAccountNumber = (SELECT BankAccountNumber FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\"),\npol.BankAccountType = (SELECT BankAccountType FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\"),\npol.BankBranchCode = (SELECT BankBranchCode FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")\nWHERE pol.Id IN (\'.implode(\',\',$PolicyIdArr).\');\n\nUPDATE policies_dev0.PolicyRolePlayer dev0prp \nSET \ndev0prp.IDNumber = (SELECT IDNumber FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")),\ndev0prp.FirstName = (SELECT FirstName FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")),\ndev0prp.Surname = (SELECT Surname FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")),\ndev0prp.Cellphone = (SELECT Cellphone FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")),\ndev0prp.EmailAddress = (SELECT EmailAddress FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\")),\ndev0prp.PassportNumber = (SELECT PassportNumber FROM policies_staging.PolicyRolePlayer stagingprp WHERE RolePlayerType = \"Account Payer\" and Policy = (SELECT Id FROM policies_staging.Policy WHERE UniquePolicyNumber =\"\'.$UniquePolicyNumberStr.\'\"))\nWHERE dev0prp.RolePlayerType = \"Account Payer\" and dev0prp.Policy IN (\'.implode(\',\',$PolicyIdArr).\');\';\nPolicy::GetDatabase()->MultiQuery($QueryStr);', 5),
+(125, 'Count with Array in 1 query', NULL, NULL, NULL, 25, NULL, '$ResultObj = Policy::GetDatabase()->MultiQuery(\'SELECT count(id) as PolicyCount FROM Policy; SELECT * FROM Policy LIMIT 10;\');\n$CountInt = null;\nwhile ($AttributeArr = $ResultObj[0]->FetchAssocArray()) {\n  if (isset($AttributeArr[\'PolicyCount\'])) {\n    $CountInt = $AttributeArr[\'PolicyCount\'];\n  }\n}\necho $CountInt;\nwhile ($AttributeArr = $ResultObj[1]->FetchAssocArray()) {\n  if (isset($AttributeArr[\'Id\'])) {\n      echo json_encode($AttributeArr);\n  }\n}\n', 2),
+(126, 'Dummy Test', NULL, NULL, NULL, 37, NULL, '$InitialQueryConditionsStr = \'\';\n$LimitInt = 10;\n$ResultArr = Policy::GetDatabase()->MultiQuery(\'SELECT count(id) as PolicyCount FROM Policy\'.$InitialQueryConditionsStr.\n\'; SELECT * FROM Policy \'.$InitialQueryConditionsStr.\' LIMIT \'.$LimitInt.\';\');\n$CountInt = $ResultArr[0]->FetchAssocArray()[\'PolicyCount\'];\necho $CountInt;\n\n', 1),
+(127, 'Prepare some DebiCheck policies', NULL, NULL, NULL, 36, NULL, 'Policy::GetDatabase()->NonQuery(\'UPDATE policy SET CollectionMethod = 8, FirstDebitDate = \"2021-02-27\" WHERE Active = 1 AND CollectionMethod = 4 ORDER BY ID DESC LIMIT 5\');', 4),
+(128, 'Multi query with count and array', NULL, NULL, NULL, 38, NULL, '$InitialQueryConditionsStr = \' WHERE CollectionMethod = 3\';\n$LimitInt = 10;\n$ResultArr = Policy::GetDatabase()->MultiQuery(\n\'SELECT count(id) as PolicyCount FROM Policy\'.$InitialQueryConditionsStr.\n\'; SELECT * FROM Policy \'.$InitialQueryConditionsStr.\' LIMIT \'.$LimitInt.\';\');\n$CountInt = $ResultArr[0]->FetchAssocArray()[\'PolicyCount\'];\necho $CountInt;\nwhile ($AttributeArr = $ResultArr[1]->FetchAssocArray()) {\n        echo print_r[$AttributeArr];\n}', 1),
+(129, 'Prepare some more DebiCheck Mandate data', NULL, NULL, NULL, 36, NULL, '$QueryStr = \'# Migrate 5 NAEDO policies to DebiCheck, and set FirstDebitDate to a few days into the future - note this could be setup to achieve DebiCheck Collections today testing by matching on CollectionPeriod\nUPDATE policies_dev0.Policy SET CollectionMethod = 8, FirstDebitDate = DATE_ADD(CURRENT_DATE, INTERVAL 10 DAY) WHERE Active = 1 AND CollectionMethod = 4 ORDER BY ID DESC LIMIT 5;\n\n# Update Policy data for all DebiCheck policies that are without a Mandate\nUPDATE policies_dev0.Policy AS UpdatePolicy,\n(SELECT Id FROM policies_dev0.Policy pol WHERE (SELECT Id FROM finance_dev0.Mandate man WHERE man.PolicyId = pol.Id limit 1) IS NULL AND pol.CollectionMethod = 8) AS RowsToUpdate\nSET \nUpdatePolicy.BankAccountNumber = \"10006317438\", \nUpdatePolicy.BankAccountType = \"SAVINGS\", \nUpdatePolicy.BankBranchCode = \"051001\"\nWHERE UpdatePolicy.Id = RowsToUpdate.Id;\n\n# Update Account Payer Policy Role Player for Policies without a Mandate\nUPDATE policies_dev0.PolicyRolePlayer Prp SET \nPrp.IDNumber = \"8805219438185\", \nPrp.FirstName = \"RICHARD\", \nPrp.Surname = \"MOBIDA\", \nPrp.Cellphone = \"+27-824280982\", \nPrp.EmailAddress = \"\", \nPrp.PassportNumber = \"\"\nWHERE Prp.RolePlayerType = \"Account Payer\" AND \nPrp.Policy IN (SELECT Id FROM policies_dev0.Policy pol WHERE (SELECT Id FROM finance_dev0.Mandate man WHERE man.PolicyId = pol.Id limit 1) IS NULL AND pol.CollectionMethod = 8);\n\';\n// echo $QueryStr;\nPolicy::GetDatabase()->MultiQuery($QueryStr);', 1),
+(130, 'Helper::sqlInsertArray', NULL, NULL, NULL, 32, NULL, '$PolicyNotificationObj1 = new stdClass();\n$PolicyNotificationObj1->PolicyId = 1;\n$PolicyNotificationObj1->Notified = 0;\n$PolicyNotificationObj1->Communication = 623;\n\n$PolicyNotificationObj2 = new Policy();\n$PolicyNotificationObj2->PolicyBenefitId = 2;\n$PolicyNotificationObj2->Notified = 0;\n$PolicyNotificationObj2->Communication = 623;\n\n$PolicyNotificationArr = array($PolicyNotificationObj1, $PolicyNotificationObj2);\necho Helper::sqlInsertArray(\'PolicyNotification\', $PolicyNotificationArr);\n', 2),
+(131, 'test', NULL, NULL, NULL, 32, NULL, '$ResultObj = Policy::GetDatabase()->Query(\'SELECT * FROM Policy LIMIT 1\')->Close();\nwhile ($Arr = $ResultObj->FetchArray()) {\necho json_encode($Arr);\n}', 3);
 
 -- --------------------------------------------------------
 
@@ -221,7 +237,7 @@ CREATE TABLE `Config` (
 --
 
 INSERT INTO `Config` (`Id`, `AutomationId`, `BatchId`) VALUES
-(1, 1, 27);
+(1, 2, 36);
 
 -- --------------------------------------------------------
 
@@ -286,13 +302,13 @@ ALTER TABLE `Automation`
 -- AUTO_INCREMENT for table `Batch`
 --
 ALTER TABLE `Batch`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `Command`
 --
 ALTER TABLE `Command`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `Config`
